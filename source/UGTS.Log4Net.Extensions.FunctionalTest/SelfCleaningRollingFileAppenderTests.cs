@@ -120,7 +120,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
                 DatePattern = "dd_MM_yyyy'.txt'"
             });
 
-            _logger.Log(Level.Debug, "wat?", null);
+            _logger.Log(Level.Debug, "removing old files", null);
 
             VerifyFileCount(3);
             VerifyFileDoesNotExist(path1);

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UGTS.Log4Net.Extensions", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UGTS.Log4Net.Extensions.UnitTest", "source\UGTS.Log4Net.Extensions.UnitTest\UGTS.Log4Net.Extensions.UnitTest.csproj", "{B8164A23-8F5E-4D3F-A0D1-2C6E90BA30DC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UGTS.Log4Net.Extensions.FunctionalTest", "source\UGTS.Log4Net.Extensions.FunctionalTest\UGTS.Log4Net.Extensions.FunctionalTest.csproj", "{645872DA-253A-401C-A234-A743C8C9D860}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_NET4|Any CPU = Debug_NET4|Any CPU
@@ -71,6 +73,30 @@ Global
 		{B8164A23-8F5E-4D3F-A0D1-2C6E90BA30DC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B8164A23-8F5E-4D3F-A0D1-2C6E90BA30DC}.Release|x86.ActiveCfg = Release|Any CPU
 		{B8164A23-8F5E-4D3F-A0D1-2C6E90BA30DC}.Release|x86.Build.0 = Release|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.Debug_NET4|Any CPU.ActiveCfg = Debug|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.Debug_NET4|Any CPU.Build.0 = Debug|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.Debug_NET4|x86.ActiveCfg = Debug|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.Debug_NET4|x86.Build.0 = Debug|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.Debug|x86.Build.0 = Debug|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.Debug32|Any CPU.ActiveCfg = Debug|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.Debug32|Any CPU.Build.0 = Debug|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.Debug32|x86.ActiveCfg = Debug|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.Debug32|x86.Build.0 = Debug|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.Debug64|Any CPU.ActiveCfg = Debug|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.Debug64|Any CPU.Build.0 = Debug|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.Debug64|x86.ActiveCfg = Debug|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.Debug64|x86.Build.0 = Debug|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.DebugEarlyBinding|Any CPU.ActiveCfg = Debug|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.DebugEarlyBinding|Any CPU.Build.0 = Debug|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.DebugEarlyBinding|x86.ActiveCfg = Debug|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.DebugEarlyBinding|x86.Build.0 = Debug|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.Release|Any CPU.Build.0 = Release|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.Release|x86.ActiveCfg = Release|Any CPU
+		{645872DA-253A-401C-A234-A743C8C9D860}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

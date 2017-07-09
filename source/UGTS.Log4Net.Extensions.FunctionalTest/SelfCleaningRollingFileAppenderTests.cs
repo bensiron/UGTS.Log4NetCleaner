@@ -9,6 +9,7 @@ using log4net.Core;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using NUnit.Framework;
+using UGTS.Testing;
 
 namespace UGTS.Log4Net.Extensions.FunctionalTest
 {
@@ -116,9 +117,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
                 RollingStyle = RollingFileAppender.RollingMode.Date,
                 MaxAgeDays = 1.5,
                 CleaningWaitType = CleaningWaitType.Always,
-                DatePattern = "dd_MM_yyyy'.txt'",
-                MaxSizeRollBackups = 1,
-                PreserveLogFileNameExtension = true,
+                DatePattern = "dd_MM_yyyy'.txt'"
             });
 
             _logger.Log(Level.Debug, "wat?", null);
@@ -149,9 +148,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
                 MaxAgeDays = 1.5,
                 CleaningPeriodMinutes = 20,
                 CleaningWaitType = CleaningWaitType.Always,
-                DatePattern = "dd_MM_yyyy'.txt'",
-                MaxSizeRollBackups = 1,
-                PreserveLogFileNameExtension = true,
+                DatePattern = "dd_MM_yyyy'.txt'"
             });
 
             _logger.Log(Level.Debug, "just did the cleaning...", null);
@@ -181,9 +178,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
                 MaxAgeDays = 1.5,
                 CleaningPeriodMinutes = period,
                 CleaningWaitType = CleaningWaitType.Always,
-                DatePattern = "dd_MM_yyyy'.txt'",
-                MaxSizeRollBackups = 1,
-                PreserveLogFileNameExtension = true,
+                DatePattern = "dd_MM_yyyy'.txt'"
             });
 
             _logger.Log(Level.Debug, "just did the cleaning...", null);
@@ -204,13 +199,70 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             Assert.That(checkTime2, Is.EqualTo(DateTime.UtcNow).Within(1).Seconds);
         }
 
+        [Test]
+        public void Cleans_Old_Files_Until_Under_Size_Limit()
+        {
+            var now = DateTime.UtcNow;
+
+            const string path1 = "sub\\a.txt";
+            const string path2 = "sub\\a\\aa\\a.txt";
+            const string path3 = "3.txt";
+            CreateFile(path1, now.AddDays(-3), RandomGenerator.String(20000));
+            CreateFile(path2, now.AddDays(-1.5), RandomGenerator.String(3000));
+            CreateFile(path2, now.AddDays(-1.2), RandomGenerator.String(10000));
+
+            SetAppender(() => new SelfCleaningRollingFileAppender
+            {
+                RollingStyle = RollingFileAppender.RollingMode.Date,
+                MaxSizeBytes = 12000,
+                CleaningWaitType = CleaningWaitType.Always,
+                DatePattern = "dd_MM_yyyy'.txt'"
+            });
+
+            _logger.Log(Level.Debug, "getting rid of the big old files", null);
+
+            VerifyFileCount(3);
+            VerifyFileDoesNotExist(path1);
+            VerifyFileDoesNotExist(path2);
+            VerifyFileExists(path3);
+            VerifyFileExists(CleaningCheckPath);
+        }
+
+        [Test]
+        public void Ignores_Files_With_Wrong_Extension()
+        {
+            var now = DateTime.UtcNow;
+
+            const string path1 = "sub\\a.log";
+            CreateFile(path1, now.AddDays(-3), RandomGenerator.String(20000));
+
+            SetAppender(() => new SelfCleaningRollingFileAppender
+            {
+                RollingStyle = RollingFileAppender.RollingMode.Date,
+                MaxAgeDays = 0.5,
+                CleaningWaitType = CleaningWaitType.Always,
+                DatePattern = "dd_MM_yyyy'.txt'"
+            });
+
+            _logger.Log(Level.Debug, "ignoring files with wrong extension", null);
+
+            VerifyFileCount(3);
+            VerifyFileExists(path1);
+            VerifyFileExists(CleaningCheckPath);
+        }
+
         private void CreateEmptyFile(string name, DateTime lastModified)
+        {
+            CreateFile(name, lastModified, "");
+        }
+
+        private void CreateFile(string name, DateTime lastModified, string content)
         {
             var path = LogPath(name);
             var parent = Path.GetDirectoryName(path);
             if (parent != null && !Directory.Exists(parent)) Directory.CreateDirectory(parent);
 
-            File.WriteAllBytes(path, new byte[0]);
+            File.WriteAllText(path, content);
             File.SetLastWriteTimeUtc(path, lastModified);
         }
 

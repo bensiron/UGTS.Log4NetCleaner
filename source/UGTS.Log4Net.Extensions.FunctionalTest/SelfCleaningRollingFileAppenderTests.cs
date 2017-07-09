@@ -193,7 +193,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             var checkTime = File.GetLastWriteTimeUtc(CleaningCheckPath);
             Assert.That(checkTime, Is.EqualTo(lastCheckTime).Within(10).Milliseconds);
 
-            var secondsWait = (dueTime - DateTime.UtcNow).TotalSeconds + 1.0;
+            var secondsWait = (dueTime - DateTime.UtcNow).TotalSeconds + 0.3;
             Task.Delay(TimeSpan.FromSeconds(secondsWait)).Wait();
 
             _logger.Log(Level.Debug, "ready to check again.", null);
@@ -206,7 +206,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
 
         private void CreateEmptyFile(string name, DateTime lastModified)
         {
-            var path = Path.Combine(_testLogPath, name);
+            var path = LogPath(name);
             var parent = Path.GetDirectoryName(path);
             if (parent != null && !Directory.Exists(parent)) Directory.CreateDirectory(parent);
 
@@ -216,22 +216,22 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
 
         private void VerifyFileExists(string path)
         {
-            Assert.That(File.Exists(Path.Combine(_testLogPath, path)), $"file not found: {path}");
+            Assert.That(File.Exists(LogPath(path)), $"file not found: {path}");
         }
 
         private void VerifyFileDoesNotExist(string path)
         {
-            Assert.False(File.Exists(Path.Combine(_testLogPath, path)), $"file found: {path}");
+            Assert.False(File.Exists(LogPath(path)), $"file found: {path}");
         }
 
         private void VerifyDirectoryExists(string path)
         {
-            Assert.That(Directory.Exists(Path.Combine(_testLogPath, path)), $"directory not found: {path}");
+            Assert.That(Directory.Exists(LogPath(path)), $"directory not found: {path}");
         }
 
         private void VerifyDirectoryDoesNotExist(string path)
         {
-            Assert.False(Directory.Exists(Path.Combine(_testLogPath, path)), $"directory found: {path}");
+            Assert.False(Directory.Exists(LogPath(path)), $"directory found: {path}");
         }
         private void VerifyFileCount(int expectedCount)
         {
@@ -249,7 +249,9 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             if (Directory.Exists(_testLogPath)) Directory.Delete(_testLogPath, true);
         }
 
-        private string CleaningCheckPath => Path.Combine(_testLogPath, "lastcleaning.check");
+        private string CleaningCheckPath => LogPath("lastcleaning.check");
+
+        private string LogPath(string path) => Path.Combine(_testLogPath, path);
 
         private static void ResetLogging()
         {

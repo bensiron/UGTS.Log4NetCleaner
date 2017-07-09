@@ -133,6 +133,36 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
         }
 
         [Test]
+        public void Skips_Locked_Files()
+        {
+            const string path1 = "sub\\a.txt";
+            const string path2 = "sub\\sub\\b.txt";
+            const string path3 = "sub\\other\\c.txt";
+            CreateEmptyFile(path1, DateTime.UtcNow.AddDays(-3));
+            CreateEmptyFile(path2, DateTime.UtcNow.AddDays(-3));
+            CreateEmptyFile(path3, DateTime.UtcNow.AddDays(-3));
+            var stream = LockFile(path2);
+
+            SetAppender(() => new SelfCleaningRollingFileAppender
+            {
+                RollingStyle = RollingFileAppender.RollingMode.Date,
+                MaxAgeDays = 1.5,
+                CleaningWaitType = CleaningWaitType.Always,
+                DatePattern = "dd_MM_yyyy'.txt'"
+            });
+
+            _logger.Log(Level.Debug, "wat?", null);
+
+            VerifyFileDoesNotExist(path1);
+            VerifyFileDoesNotExist(path3);
+            VerifyFileExists(path2);
+            VerifyFileExists(CleaningCheckPath);
+            VerifyFileCount(3);
+
+            stream.Close();
+        }
+
+        [Test]
         public void Does_Not_Clean_If_Not_Due_For_Cleaning_Check()
         {
             var now = DateTime.UtcNow;
@@ -209,7 +239,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             const string path3 = "3.txt";
             CreateFile(path1, now.AddDays(-3), RandomGenerator.String(20000));
             CreateFile(path2, now.AddDays(-1.5), RandomGenerator.String(3000));
-            CreateFile(path2, now.AddDays(-1.2), RandomGenerator.String(10000));
+            CreateFile(path3, now.AddDays(-1.2), RandomGenerator.String(10000));
 
             SetAppender(() => new SelfCleaningRollingFileAppender
             {
@@ -254,6 +284,11 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
         private void CreateEmptyFile(string name, DateTime lastModified)
         {
             CreateFile(name, lastModified, "");
+        }
+
+        private FileStream LockFile(string path)
+        {
+            return new FileStream(LogPath(path), FileMode.Open, FileAccess.Read, FileShare.None);
         }
 
         private void CreateFile(string name, DateTime lastModified, string content)

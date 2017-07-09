@@ -4,8 +4,8 @@ using log4net.Appender;
 using log4net.Core;
 using Moq;
 using NUnit.Framework;
-using UGTS.Testing;
 using UGTS.Log4Net.Extensions.Interfaces;
+using UGTS.Testing;
 
 namespace UGTS.Log4Net.Extensions.UnitTest
 {
@@ -102,8 +102,8 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 var basePath = RandomGenerator.String();
                 var lastRun = RandomGenerator.DateTime();
                 var updatedTime = RandomGenerator.DateTime();
-                if (hasMaxAge) TestObject.MaxAgeDays = 1;
-                if (hasMaxBytes) TestObject.MaxSizeBytes = 1;
+                if (hasMaxAge) TestObject.CleaningMaxAgeDays = 1;
+                if (hasMaxBytes) TestObject.CleaningMaxSizeBytes = 1;
                 TestObject.LastCleaning = lastRun;
                 TestObject.CleaningBasePath = basePath;
                 Mock<IDirectoryCleaner>().Setup(x => x.UpdateLastCleaningTime(basePath)).Returns(updatedTime);
@@ -130,7 +130,7 @@ namespace UGTS.Log4Net.Extensions.UnitTest
             {
                 Mock<ISelfCleaningRollingFileAppender>().Setup(x => x.CleanupLogDirectory()).Returns(Task.Run(() => {}));
                 Mock<ISelfCleaningRollingFileAppender>().Setup(x => x.IsDueForCleaning(It.IsAny<DateTime>())).Returns(true);
-                TestObject.MaxAgeDays = 1;
+                TestObject.CleaningMaxAgeDays = 1;
                 TestObject.LastCleaning = firstTime ? (DateTime?) null : RandomGenerator.DateTime();
 
                 TestObject.TryCleanupLogDirectory();
@@ -153,7 +153,7 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 Mock<ISelfCleaningRollingFileAppender>().Setup(x => x.CleanupLogDirectory()).Returns(taskStarter);
                 Mock<ISelfCleaningRollingFileAppender>().Setup(x => x.IsDueForCleaning(It.IsAny<DateTime>())).Returns(true);
                 Mock<ISelfCleaningRollingFileAppender>().Setup(x => x.ShouldWaitForCleaning(It.IsAny<bool>())).Returns(shouldWait);
-                TestObject.MaxAgeDays = 1;
+                TestObject.CleaningMaxAgeDays = 1;
                 
                 TestObject.TryCleanupLogDirectory();
 
@@ -254,8 +254,8 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 var extension = "." + RandomGenerator.String();
                 TestObject.CleaningBasePath = baseFile;
                 TestObject.File = "abc" + extension;
-                if (hasMaxAge) TestObject.MaxAgeDays = maxAge;
-                TestObject.MaxSizeBytes = maxBytes;
+                if (hasMaxAge) TestObject.CleaningMaxAgeDays = maxAge;
+                TestObject.CleaningMaxSizeBytes = maxBytes;
                 var expectedCutoff = hasMaxAge ? (DateTime?)now.AddDays(-maxAge) : null;
                 Mock<RollingFileAppender.IDateTime>().Setup(x => x.Now).Returns(now);
 

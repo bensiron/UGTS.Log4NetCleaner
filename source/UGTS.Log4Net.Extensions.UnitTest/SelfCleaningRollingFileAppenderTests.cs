@@ -32,13 +32,13 @@ namespace UGTS.Log4Net.Extensions.UnitTest
             {
                 var file = RandomGenerator.String();
                 TestObject.File = file;
-                TestObject.BasePath = null;
+                TestObject.CleaningBasePath = null;
                 Mock<ISelfCleaningRollingFileAppender>().Setup(x => x.ActivateOptionsBase())
-                    .Callback(() => Assert.That(TestObject.BasePath, Is.EqualTo(file)));
+                    .Callback(() => Assert.That(TestObject.CleaningBasePath, Is.EqualTo(file)));
 
                 TestObject.ActivateOptions();
 
-                Assert.That(TestObject.BasePath, Is.EqualTo(file));
+                Assert.That(TestObject.CleaningBasePath, Is.EqualTo(file));
                 Mock<ISelfCleaningRollingFileAppender>().Verify(x => x.ActivateOptionsBase(), Times.Once);
             }
 
@@ -48,11 +48,11 @@ namespace UGTS.Log4Net.Extensions.UnitTest
             {
                 var baseFile = RandomGenerator.String();
                 TestObject.File = file;
-                TestObject.BasePath = baseFile;
+                TestObject.CleaningBasePath = baseFile;
 
                 TestObject.ActivateOptions();
 
-                Assert.That(TestObject.BasePath, Is.EqualTo(baseFile));
+                Assert.That(TestObject.CleaningBasePath, Is.EqualTo(baseFile));
             }
         }
 
@@ -105,7 +105,7 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 if (hasMaxAge) TestObject.MaxAgeDays = 1;
                 if (hasMaxBytes) TestObject.MaxSizeBytes = 1;
                 TestObject.LastCleaning = lastRun;
-                TestObject.BasePath = basePath;
+                TestObject.CleaningBasePath = basePath;
                 Mock<IDirectoryCleaner>().Setup(x => x.UpdateLastCleaningTime(basePath)).Returns(updatedTime);
                 Mock<ISelfCleaningRollingFileAppender>().Setup(x => x.IsDueForCleaning(It.IsAny<DateTime>()))
                     .Returns(isDue);
@@ -175,7 +175,7 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 var updatedTime = now.AddMinutes(-period).AddSeconds(secondsDelta);
                 TestObject.CleaningPeriodMinutes = period;
                 TestObject.LastCleaning = null;
-                TestObject.BasePath = basePath;
+                TestObject.CleaningBasePath = basePath;
                 Mock<IDirectoryCleaner>().Setup(x => x.GetLastCleaningTime(basePath)).Returns(updatedTime);
 
                 var actual = TestInterface.IsDueForCleaning(now);
@@ -252,7 +252,7 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 var baseFile = RandomGenerator.String();
                 var maxBytes = RandomGenerator.Long();
                 var extension = "." + RandomGenerator.String();
-                TestObject.BasePath = baseFile;
+                TestObject.CleaningBasePath = baseFile;
                 TestObject.File = "abc" + extension;
                 if (hasMaxAge) TestObject.MaxAgeDays = maxAge;
                 TestObject.MaxSizeBytes = maxBytes;

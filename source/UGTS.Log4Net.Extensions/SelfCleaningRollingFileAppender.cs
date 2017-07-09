@@ -29,7 +29,7 @@ namespace UGTS.Log4Net.Extensions
 
         [UsedImplicitly] public ITaskRunner TaskRunner { get; set; }
 
-        [UsedImplicitly] public string BasePath { get; set; }
+        [UsedImplicitly] public string CleaningBasePath { get; set; }
 
         [UsedImplicitly] public double MaxAgeDays { get; set; } = double.MaxValue;
 
@@ -41,7 +41,7 @@ namespace UGTS.Log4Net.Extensions
 
         public override void ActivateOptions()
         {
-            if (BasePath == null) BasePath = File;
+            if (CleaningBasePath == null) CleaningBasePath = File;
             _self.ActivateOptionsBase();
         }
 
@@ -65,7 +65,7 @@ namespace UGTS.Log4Net.Extensions
             var now = DateTimeProvider.Now;
             if (!_self.IsDueForCleaning(now)) return;
 
-            LastCleaning = Cleaner.UpdateLastCleaningTime(BasePath);
+            LastCleaning = Cleaner.UpdateLastCleaningTime(CleaningBasePath);
             var task = _self.CleanupLogDirectory();
             if (_self.ShouldWaitForCleaning(wasFirstTime)) task.Wait();
         }
@@ -75,13 +75,13 @@ namespace UGTS.Log4Net.Extensions
             var now = DateTimeProvider.Now;
             var cutoffDate = HasMaxAgeDays ? (DateTime?)now.AddDays(-MaxAgeDays) : null;
             var fileExtension = System.IO.Path.GetExtension(File);
-            return TaskRunner.Run(() => Cleaner.Clean(BasePath, fileExtension, cutoffDate, HasMaxSizeBytes ? (long?)MaxSizeBytes : null));
+            return TaskRunner.Run(() => Cleaner.Clean(CleaningBasePath, fileExtension, cutoffDate, HasMaxSizeBytes ? (long?)MaxSizeBytes : null));
         }
 
         public bool IsDueForCleaning(DateTime now)
         {
             if (!LastCleaning.HasValue)
-                LastCleaning = Cleaner.GetLastCleaningTime(BasePath) ?? DateTime.MinValue;
+                LastCleaning = Cleaner.GetLastCleaningTime(CleaningBasePath) ?? DateTime.MinValue;
 
             return (now - LastCleaning.Value).TotalMinutes >= CleaningPeriodMinutes;
         }

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>UGTS.Log4Net.Extensions</id>
+    <version>1.1.0</version>
+    <title>UGTS.Log4Net.Extensions</title>
+    <authors>Ben Siron</authors>
+    <owners>Ben Siron</owners>
+    <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
+    <projectUrl>https://ugts.org</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>log4net Extensions</description>
+    <summary>log4net Extensions</summary>
+    <copyright>Copyright 2017</copyright>
+    <tags>UGTS Log4Net Extensions</tags>
+    <dependencies>
+      <dependency id="log4net" version="2.0.8" />
+    </dependencies>
+  </metadata>
+  <files>
+     <file src="..\source\ugts.log4net.extensions\bin\Debug\UGTS.Log4Net.Extensions.dll" target="lib\net40\UGTS.Log4Net.Extensions.dll" />
+     <file src="..\source\ugts.log4net.extensions\bin\Debug\UGTS.Log4Net.Extensions.pdb" target="lib\net40\UGTS.Log4Net.Extensions.pdb" />
+ </files>
+</package>

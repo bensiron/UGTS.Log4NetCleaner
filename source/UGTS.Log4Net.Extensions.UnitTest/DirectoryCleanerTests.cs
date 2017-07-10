@@ -214,5 +214,19 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 Assert.That(actual, Is.EqualTo(now));
             }
         }
+
+        internal class GetFileExtension : DirectoryCleanerTests
+        {
+            [TestCase("a.txt", ".txt")]
+            [TestCase("a.txt.14", ".txt")]
+            [TestCase("a.txt.log", ".log")]
+            [TestCase("a", "")]
+            [TestCase("", null)]
+            [TestCase(null, null)]
+            public void Returns_File_Extension_Without_Backup_Number(string filename, string expected)
+            {
+                Assert.That(TestObject.GetFileExtension(filename), Is.EqualTo(expected));
+            }
+        }
     }
 }

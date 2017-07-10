@@ -65,6 +65,7 @@ namespace UGTS.Log4Net.Extensions.UnitTest
             }
 
             [TestCase("")]
+            [TestCase("*")]
             [TestCase(null)]
             public void Finds_File_Info_Matching_Anything_Non_Blank_When_No_Extension_Specified(string extension)
             {

@@ -45,6 +45,7 @@ namespace UGTS.Log4Net.Extensions
         {
             if (CleaningBasePath == null) CleaningBasePath = File;
             _self.ActivateOptionsBase();
+            if (CleaningFileExtension == null) CleaningFileExtension = Cleaner.GetFileExtension(File);
         }
 
         protected override void Append(LoggingEvent loggingEvent)

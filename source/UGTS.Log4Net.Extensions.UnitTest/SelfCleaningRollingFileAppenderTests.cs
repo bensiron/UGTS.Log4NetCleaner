@@ -54,6 +54,33 @@ namespace UGTS.Log4Net.Extensions.UnitTest
 
                 Assert.That(TestObject.CleaningBasePath, Is.EqualTo(baseFile));
             }
+
+            [Test]
+            public void Sets_File_Extension_After_Calling_Base_Method()
+            {
+                var file = RandomGenerator.String();
+                var extension = RandomGenerator.String();
+                Mock<ISelfCleaningRollingFileAppender>().Setup(x => x.ActivateOptionsBase())
+                    .Callback(() => TestObject.File = file);
+                Mock<IDirectoryCleaner>().Setup(x => x.GetFileExtension(file)).Returns(extension);
+
+                TestObject.ActivateOptions();
+
+                Mock<IDirectoryCleaner>().Verify(x => x.GetFileExtension(It.IsAny<string>()), Times.Once);
+                Assert.That(TestObject.CleaningFileExtension, Is.EqualTo(extension));
+            }
+
+            [Test]
+            public void Does_Not_Set_Extension_If_Already_Set()
+            {
+                var extension = RandomGenerator.String();
+                TestObject.CleaningFileExtension = extension;
+
+                TestObject.ActivateOptions();
+
+                Assert.That(TestObject.CleaningFileExtension, Is.EqualTo(extension));
+                Mock<IDirectoryCleaner>().Verify(x => x.GetFileExtension(It.IsAny<string>()), Times.Never);
+            }
         }
 
         internal class Append : SelfCleaningRollingFileAppenderTests

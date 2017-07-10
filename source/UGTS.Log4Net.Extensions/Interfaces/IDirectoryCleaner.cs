@@ -7,5 +7,6 @@ namespace UGTS.Log4Net.Extensions.Interfaces
         void Clean(string path, string fileExtension, DateTime? cutoffTime, long? maxSizeBytes);
         DateTime? GetLastCleaningTime(string path);
         DateTime UpdateLastCleaningTime(string path);
+        string GetFileExtension(string path);
     }
 }

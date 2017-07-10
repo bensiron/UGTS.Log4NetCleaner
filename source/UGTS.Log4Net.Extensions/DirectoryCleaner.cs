@@ -47,16 +47,23 @@ namespace UGTS.Log4Net.Extensions
             return _ops.CreateEmptyFile(GetLastCleaningFilePath(path)) ?? _time.Now;
         }
 
+        public string GetFileExtension(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path)) return null;
+
+            if (_backupRegex.IsMatch(path)) path = path.Substring(0, path.LastIndexOf('.'));
+            return Path.GetExtension(path);
+        }
+
         private bool IsMatchingLogFile(string path, string extension)
         {
             if (string.IsNullOrWhiteSpace(path)) return false;
             if (string.Equals(Path.GetFileName(path), LastCleaningCheckFileName, StringComparison.OrdinalIgnoreCase)) return false;
-            if (string.IsNullOrWhiteSpace(extension)) return true;
+            if (string.IsNullOrWhiteSpace(extension) || extension == "*") return true;
 
             if (!extension.StartsWith(".")) extension = "." + extension;
 
-            if (_backupRegex.IsMatch(path)) path = path.Substring(0, path.LastIndexOf('.'));
-            return string.Equals(Path.GetExtension(path), extension, StringComparison.OrdinalIgnoreCase);
+            return string.Equals(extension, GetFileExtension(path), StringComparison.OrdinalIgnoreCase);
         }
 
         private void RemoveOldestFilesOverSizeLimit(IDictionary<string, FileInfo> found, long limit)

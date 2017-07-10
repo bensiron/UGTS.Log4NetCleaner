@@ -251,9 +251,9 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 var maxAge = RandomGenerator.Double(3.0, 8.0);
                 var baseFile = RandomGenerator.String();
                 var maxBytes = RandomGenerator.Long();
-                var extension = "." + RandomGenerator.String();
+                var extension = RandomGenerator.String();
                 TestObject.CleaningBasePath = baseFile;
-                TestObject.File = "abc" + extension;
+                TestObject.CleaningFileExtension = extension;
                 if (hasMaxAge) TestObject.CleaningMaxAgeDays = maxAge;
                 TestObject.CleaningMaxSizeBytes = maxBytes;
                 var expectedCutoff = hasMaxAge ? (DateTime?)now.AddDays(-maxAge) : null;

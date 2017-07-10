@@ -41,7 +41,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             DeleteFiles();
         }
 
-        private void SetAppender(Func<SelfCleaningRollingFileAppender> generator)
+        private SelfCleaningRollingFileAppender SetAppender(Func<SelfCleaningRollingFileAppender> generator)
         {
             var appender = generator();
 
@@ -53,36 +53,8 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             appender.ActivateOptions();
             _logger.AddAppender(appender);
             _logger.Repository.Configured = true;
-        }
 
-        [Test]
-        public void Can_Roll_By_File_Size()
-        {
-            SetAppender(() => new SelfCleaningRollingFileAppender
-            {
-                RollingStyle = RollingFileAppender.RollingMode.Composite,
-                DatePattern = "dd_MM_yyyy",
-                MaxSizeRollBackups = 1,
-                CountDirection = 1,
-                PreserveLogFileNameExtension = true,
-                MaximumFileSize = "10KB"
-            });
-
-            for (var i = 0; i < 1000; i++)
-            {
-                StringBuilder s = new StringBuilder();
-                for (var j = 50; j < 100; j++)
-                {
-                    if (j > 50)
-                    {
-                        s.Append(" ");
-                    }
-                    s.Append(j);
-                }
-                _logger.Log(Level.Debug, s.ToString(), null);
-            }
-
-            VerifyFileCount(2);
+            return appender;
         }
 
         [Test]
@@ -130,6 +102,42 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             VerifyFileExists(path3);
             VerifyDirectoryExists("sub\\other");
             VerifyFileExists(CleaningCheckPath);
+        }
+
+        [TestCase(-1)]
+        [TestCase(1)]
+        public void Backup_Files_Also_Get_Cleaned(int countDirection)
+        {
+            var appender = SetAppender(() => new SelfCleaningRollingFileAppender
+            {
+                RollingStyle = RollingFileAppender.RollingMode.Composite,
+                DatePattern = "dd_MM_yyyy'.txt'",
+                MaxSizeRollBackups = 1,
+                CountDirection = countDirection,
+                CleaningMaxSizeBytes = 15000,
+                CleaningWaitType = CleaningWaitType.Always,
+                PreserveLogFileNameExtension = false,
+                MaximumFileSize = "10KB"
+            });
+
+            for (var i = 0; i < 1000; i++)
+            {
+                StringBuilder s = new StringBuilder();
+                for (var j = 50; j < 100; j++)
+                {
+                    if (j > 50)
+                    {
+                        s.Append(" ");
+                    }
+                    s.Append(j);
+                }
+                _logger.Log(Level.Debug, s.ToString(), null);
+            }
+
+            appender.CleaningPeriodMinutes = 0;
+            _logger.Log(Level.Debug, "just one more time", null);
+
+            VerifyFileCount(2);
         }
 
         [Test]
@@ -258,18 +266,22 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             VerifyFileExists(CleaningCheckPath);
         }
 
-        [Test]
-        public void Ignores_Files_With_Wrong_Extension()
+        [TestCase("txt")]
+        [TestCase(".txt")]
+        public void Ignores_Files_With_Wrong_Extension(string extension)
         {
             var now = DateTime.UtcNow;
 
             const string path1 = "sub\\a.log";
+            const string path2 = "sub\\a.txt.14";
             CreateFile(path1, now.AddDays(-3), RandomGenerator.String(20000));
+            CreateFile(path2, now.AddDays(-3), RandomGenerator.String(20000));
 
             SetAppender(() => new SelfCleaningRollingFileAppender
             {
                 RollingStyle = RollingFileAppender.RollingMode.Date,
                 CleaningMaxAgeDays = 0.5,
+                CleaningFileExtension = extension,
                 CleaningWaitType = CleaningWaitType.Always,
                 DatePattern = "dd_MM_yyyy'.txt'"
             });
@@ -278,6 +290,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
 
             VerifyFileCount(3);
             VerifyFileExists(path1);
+            VerifyFileDoesNotExist(path2);
             VerifyFileExists(CleaningCheckPath);
         }
 

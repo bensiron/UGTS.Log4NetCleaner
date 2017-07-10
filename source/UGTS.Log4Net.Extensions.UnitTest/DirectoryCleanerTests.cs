@@ -4,8 +4,8 @@ using System.IO;
 using log4net.Appender;
 using Moq;
 using NUnit.Framework;
-using UGTS.Testing;
 using UGTS.Log4Net.Extensions.Interfaces;
+using UGTS.Testing;
 
 namespace UGTS.Log4Net.Extensions.UnitTest
 {
@@ -26,18 +26,6 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                     .Returns(new Dictionary<string, FileInfo>());
             }
 
-            [TestCase(null)]
-            [TestCase("")]
-            public void Does_Nothing_If_Blank_File_Extension(string extension)
-            {
-                Mock<IFileSystemOperations>().Setup(x => x.ExistsDirectory("a")).Returns(true);
-
-                TestObject.Clean("a", extension, DateTime.MaxValue, null);
-
-                Mock<IFileSystemOperations>().Verify(x => x.FindFileInfo(It.IsAny<string>(), It.IsAny<Func<string, bool>>()), Times.Never);
-                Mock<IFileSystemOperations>().Verify(x => x.DeleteEmptyDirectories(It.IsAny<string>()), Times.Never);
-            }
-
             [Test]
             public void Does_Nothing_If_Directory_Does_Not_Exist()
             {
@@ -49,11 +37,38 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 Mock<IFileSystemOperations>().Verify(x => x.DeleteEmptyDirectories(It.IsAny<string>()), Times.Never);
             }
 
-            [Test]
-            public void Finds_File_Info()
+            [TestCase(true)]
+            [TestCase(false)]
+            public void Finds_File_Info_Matching_By_Extension(bool extensionStartsWithDot)
             {
                 Func<string, bool> actualPredicate = null;
                 var extension = "." + RandomGenerator.String();
+                var path = RandomGenerator.String();
+                Mock<IFileSystemOperations>().Setup(x => x.FindFileInfo(path, It.IsAny<Func<string, bool>>()))
+                    .Returns(new Dictionary<string, FileInfo>())
+                    .Callback<string, Func<string, bool>>((_, predicate) => actualPredicate = predicate);
+
+                TestObject.Clean(path, extension.Substring(extensionStartsWithDot ? 0 : 1), DateTime.MaxValue, null);
+
+                Mock<IFileSystemOperations>().Verify(x => x.FindFileInfo(path, It.IsAny<Func<string, bool>>()));
+                Mock<IFileSystemOperations>().Verify(x => x.FindFileInfo(It.IsAny<string>(), It.IsAny<Func<string, bool>>()), Times.Once);
+
+                Assert.True(actualPredicate("a" + extension));
+                Assert.True(actualPredicate("a" + extension.ToUpper()));
+                Assert.True(actualPredicate("a" + extension.ToUpper() + ".24243"));
+                Assert.True(actualPredicate("a" + extension + ".110"));
+                Assert.False(actualPredicate("a"));
+                Assert.False(actualPredicate("a" + extension + ".not"));
+                Assert.False(actualPredicate(""));
+                Assert.False(actualPredicate(null));
+                Assert.False(actualPredicate("a." + RandomGenerator.String()));
+            }
+
+            [TestCase("")]
+            [TestCase(null)]
+            public void Finds_File_Info_Matching_Anything_Non_Blank_When_No_Extension_Specified(string extension)
+            {
+                Func<string, bool> actualPredicate = null;
                 var path = RandomGenerator.String();
                 Mock<IFileSystemOperations>().Setup(x => x.FindFileInfo(path, It.IsAny<Func<string, bool>>()))
                     .Returns(new Dictionary<string, FileInfo>())
@@ -64,12 +79,14 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 Mock<IFileSystemOperations>().Verify(x => x.FindFileInfo(path, It.IsAny<Func<string, bool>>()));
                 Mock<IFileSystemOperations>().Verify(x => x.FindFileInfo(It.IsAny<string>(), It.IsAny<Func<string, bool>>()), Times.Once);
 
-                Assert.True(actualPredicate("a" + extension));
-                Assert.True(actualPredicate("a" + extension.ToUpper()));
-                Assert.False(actualPredicate("a"));
+                Assert.True(actualPredicate("a.txt"));
+                Assert.True(actualPredicate("a.log"));
+                Assert.True(actualPredicate("a"));
+                Assert.True(actualPredicate("a.110"));
                 Assert.False(actualPredicate(""));
+                Assert.False(actualPredicate("a\\b\\" + DirectoryCleaner.LastCleaningCheckFileName));
+                Assert.False(actualPredicate(DirectoryCleaner.LastCleaningCheckFileName.ToUpper()));
                 Assert.False(actualPredicate(null));
-                Assert.False(actualPredicate("a." + RandomGenerator.String()));
             }
 
             [Test]

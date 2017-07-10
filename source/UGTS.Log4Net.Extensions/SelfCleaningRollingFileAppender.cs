@@ -31,6 +31,8 @@ namespace UGTS.Log4Net.Extensions
 
         [UsedImplicitly] public string CleaningBasePath { get; set; }
 
+        [UsedImplicitly] public string CleaningFileExtension { get; set; }
+
         [UsedImplicitly] public double CleaningMaxAgeDays { get; set; } = double.MaxValue;
 
         [UsedImplicitly] public long CleaningMaxSizeBytes { get; set; } = long.MaxValue;
@@ -74,8 +76,7 @@ namespace UGTS.Log4Net.Extensions
         {
             var now = DateTimeProvider.Now;
             var cutoffDate = HasMaxAgeDays ? (DateTime?)now.AddDays(-CleaningMaxAgeDays) : null;
-            var fileExtension = System.IO.Path.GetExtension(File);
-            return TaskRunner.Run(() => Cleaner.Clean(CleaningBasePath, fileExtension, cutoffDate, HasMaxSizeBytes ? (long?)CleaningMaxSizeBytes : null));
+            return TaskRunner.Run(() => Cleaner.Clean(CleaningBasePath, CleaningFileExtension, cutoffDate, HasMaxSizeBytes ? (long?)CleaningMaxSizeBytes : null));
         }
 
         public bool IsDueForCleaning(DateTime now)

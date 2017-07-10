@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using log4net.Appender;
 using UGTS.Log4Net.Extensions.Interfaces;
 
@@ -11,6 +12,9 @@ namespace UGTS.Log4Net.Extensions
     {
         private readonly IFileSystemOperations _ops;
         private readonly RollingFileAppender.IDateTime _time;
+        private readonly Regex _backupRegex = new Regex("\\.\\d+$");
+
+        public const string LastCleaningCheckFileName = "lastcleaning.check";
 
         public DirectoryCleaner(IFileSystemOperations ops, RollingFileAppender.IDateTime time)
         {
@@ -20,16 +24,15 @@ namespace UGTS.Log4Net.Extensions
 
         public void Clean(string path, string fileExtension, DateTime? cutoffTime, long? maxSizeBytes)
         {
-            if (string.IsNullOrWhiteSpace(fileExtension) || !_ops.ExistsDirectory(path)) return;
+            if (!_ops.ExistsDirectory(path)) return;
 
-            var found = _ops.FindFileInfo(path,
-                p => string.Equals(Path.GetExtension(p), fileExtension, StringComparison.OrdinalIgnoreCase));
+            var found = _ops.FindFileInfo(path, p => IsMatchingLogFile(p, fileExtension));
 
             if (cutoffTime.HasValue)
                 RemoveFiles(found, found.Keys, info => info.LastWriteTimeUtc < cutoffTime.Value);
 
             if (maxSizeBytes.HasValue)
-                RemoveFilesOverSizeLimit(found, maxSizeBytes.Value);
+                RemoveOldestFilesOverSizeLimit(found, maxSizeBytes.Value);
 
             _ops.DeleteEmptyDirectories(path);
         }
@@ -44,7 +47,19 @@ namespace UGTS.Log4Net.Extensions
             return _ops.CreateEmptyFile(GetLastCleaningFilePath(path)) ?? _time.Now;
         }
 
-        private void RemoveFilesOverSizeLimit(IDictionary<string, FileInfo> found, long limit)
+        private bool IsMatchingLogFile(string path, string extension)
+        {
+            if (string.IsNullOrWhiteSpace(path)) return false;
+            if (string.Equals(Path.GetFileName(path), LastCleaningCheckFileName, StringComparison.OrdinalIgnoreCase)) return false;
+            if (string.IsNullOrWhiteSpace(extension)) return true;
+
+            if (!extension.StartsWith(".")) extension = "." + extension;
+
+            if (_backupRegex.IsMatch(path)) path = path.Substring(0, path.LastIndexOf('.'));
+            return string.Equals(Path.GetExtension(path), extension, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private void RemoveOldestFilesOverSizeLimit(IDictionary<string, FileInfo> found, long limit)
         {
             var totalSizeRemaining = found.Values.Sum(info => info.Length);
             RemoveFiles(found, found.Keys.OrderBy(f => found[f].LastWriteTimeUtc),
@@ -72,8 +87,8 @@ namespace UGTS.Log4Net.Extensions
         }
 
         private static string GetLastCleaningFilePath(string path)
-        {
-            return Path.Combine(path, "lastcleaning.check");
+        {            
+            return Path.Combine(path, LastCleaningCheckFileName);
         }
     }
 }

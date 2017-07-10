@@ -1,6 +1,7 @@
 ﻿using System;
 using JetBrains.Annotations;
 using log4net;
+using log4net.Core;
 
 namespace UGTS.Log4Net.Extensions
 {
@@ -13,7 +14,8 @@ namespace UGTS.Log4Net.Extensions
         [UsedImplicitly]
         public static void Fatal(this ILog log, Func<string> generator)
         {
-            if (log.IsFatalEnabled) log.Fatal(generator());
+            if (!log.IsFatalEnabled) return;
+            Log(log, Level.Fatal, generator);
         }
 
         /// <summary>
@@ -23,7 +25,8 @@ namespace UGTS.Log4Net.Extensions
         [UsedImplicitly]
         public static void Error(this ILog log, Func<string> generator)
         {
-            if (log.IsErrorEnabled) log.Error(generator());
+            if (!log.IsErrorEnabled) return;
+            Log(log, Level.Error, generator);
         }
 
         /// <summary>
@@ -33,7 +36,8 @@ namespace UGTS.Log4Net.Extensions
         [UsedImplicitly]
         public static void Warn(this ILog log, Func<string> generator)
         {
-            if (log.IsWarnEnabled) log.Warn(generator());
+            if (!log.IsWarnEnabled) return;
+            Log(log, Level.Warn, generator);
         }
 
         /// <summary>
@@ -43,7 +47,8 @@ namespace UGTS.Log4Net.Extensions
         [UsedImplicitly]
         public static void Info(this ILog log, Func<string> generator)
         {
-            if (log.IsInfoEnabled) log.Info(generator());
+            if (!log.IsInfoEnabled) return;
+            Log(log, Level.Info, generator);
         }
 
         /// <summary>
@@ -53,7 +58,20 @@ namespace UGTS.Log4Net.Extensions
         [UsedImplicitly]
         public static void Debug(this ILog log, Func<string> generator)
         {
-            if (log.IsDebugEnabled) log.Debug(generator());
+            if (!log.IsDebugEnabled) return;
+            Log(log, Level.Debug, generator);
+        }
+
+        private static Level GetLevel(ILoggerWrapper log, Level defaultLevel)
+        {
+            return log.Logger.Repository.LevelMap.LookupWithDefault(defaultLevel);
+        }
+
+        private static void Log(ILoggerWrapper log, Level defaultLevel, Func<string> generator)
+        {
+            var level = GetLevel(log, defaultLevel);
+            var message = generator();
+            log.Logger.Log(typeof(LogExtensions), level, message, null);
         }
     }
 }

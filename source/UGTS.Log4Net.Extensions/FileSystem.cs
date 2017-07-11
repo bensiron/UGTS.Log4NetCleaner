@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using UGTS.Log4Net.Extensions.Interfaces;
+#pragma warning disable 1591
 
 namespace UGTS.Log4Net.Extensions
 {

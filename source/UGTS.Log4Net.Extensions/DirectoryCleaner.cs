@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using log4net.Appender;
 using UGTS.Log4Net.Extensions.Interfaces;
+#pragma warning disable 1591
 
 namespace UGTS.Log4Net.Extensions
 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Web;
+#pragma warning disable 1591
 
 namespace UGTS.Log4Net.Extensions
 {

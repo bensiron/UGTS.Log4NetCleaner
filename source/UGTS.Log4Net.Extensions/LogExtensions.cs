@@ -5,6 +5,9 @@ using log4net.Core;
 
 namespace UGTS.Log4Net.Extensions
 {
+    /// <summary>
+    /// ILog extensions methods
+    /// </summary>
     public static class LogExtensions
     {
         /// <summary>

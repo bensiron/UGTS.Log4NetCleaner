@@ -9,10 +9,16 @@ using UGTS.Log4Net.Extensions.Interfaces;
 
 namespace UGTS.Log4Net.Extensions
 {
+    /// <summary>
+    /// A self-cleaning rolling file appender which can clean old files out of its log output directory.
+    /// </summary>
     public class SelfCleaningRollingFileAppender : RollingFileAppender, ISelfCleaningRollingFileAppender
     {
         private const double DefaultCleaningPeriodMinutes = 60.0;
 
+        /// <summary>
+        /// The one and only constructor for this type
+        /// </summary>
         public SelfCleaningRollingFileAppender()
         {
             _self = this;
@@ -168,6 +174,9 @@ namespace UGTS.Log4Net.Extensions
         /// </remarks>
         [UsedImplicitly] public CleaningWaitType CleaningWaitType { get; set; } = CleaningWaitType.FirstTimeOnly;
 
+        /// <summary>
+        /// meant for internal use only
+        /// </summary>
         public override void ActivateOptions()
         {
             if (CleaningBasePath == null) CleaningBasePath = File;
@@ -175,38 +184,52 @@ namespace UGTS.Log4Net.Extensions
             if (CleaningFileExtension == null) CleaningFileExtension = Cleaner.GetFileExtension(File);
         }
 
+        /// <summary>
+        /// meant for internal use only
+        /// </summary>
         protected override void Append(LoggingEvent loggingEvent)
         {
             _self.TryCleanupLogDirectory();
             _self.AppendBase(loggingEvent);
         }
 
+        /// <summary>
+        /// meant for internal use only
+        /// </summary>
         protected override void Append(LoggingEvent[] loggingEvents)
         {
             _self.TryCleanupLogDirectory();
             _self.AppendBase(loggingEvents);
         }
 
+        /// <summary>
+        /// meant for internal use only
+        /// </summary>
         public void TryCleanupLogDirectory()
         {
             if (!_maxmimumFileAgeDays.HasValue && !_maximumDirectorySizeBytes.HasValue) return;
-            var wasFirstTime = LastCleaning == null;
+            var wait = _self.ShouldWaitForCleaning();
 
             var now = _dateTimeProvider.Now;
             if (!_self.IsDueForCleaning(now)) return;
 
             LastCleaning = Cleaner.UpdateLastCleaningTime(CleaningBasePath);
-            var task = _self.CleanupLogDirectory();
-            if (_self.ShouldWaitForCleaning(wasFirstTime)) task.Wait();
+            _self.CleanupLogDirectory(wait);
         }
 
-        public Task CleanupLogDirectory()
+        /// <summary>
+        /// call this to explicitly trigger a cleaning of the log directory
+        /// </summary>
+        public Task CleanupLogDirectory(bool wait)
         {
             var now = _dateTimeProvider.Now;
             var cutoffDate = _maxmimumFileAgeDays.HasValue ? (DateTime?)now.AddDays(-_maxmimumFileAgeDays.Value) : null;
-            return CleaningTaskRunner.Run(() => Cleaner.Clean(CleaningBasePath, CleaningFileExtension, cutoffDate, _maximumDirectorySizeBytes));
+            return CleaningTaskRunner.Run(() => Cleaner.Clean(CleaningBasePath, CleaningFileExtension, cutoffDate, _maximumDirectorySizeBytes), wait);
         }
 
+        /// <summary>
+        /// true if the next logging call will trigger a cleaning of the log directory
+        /// </summary>
         public bool IsDueForCleaning(DateTime now)
         {
             if (!LastCleaning.HasValue)
@@ -217,22 +240,34 @@ namespace UGTS.Log4Net.Extensions
             return (now - LastCleaning.Value).TotalMinutes >= CleaningPeriodMinutes;
         }
 
-        bool ISelfCleaningRollingFileAppender.ShouldWaitForCleaning(bool wasFirstTime)
+        /// <summary>
+        /// true if log cleaning should run synchronously
+        /// </summary>
+        bool ISelfCleaningRollingFileAppender.ShouldWaitForCleaning()
         {
             return (CleaningWaitType != CleaningWaitType.Never) &&
-               (wasFirstTime || CleaningWaitType == CleaningWaitType.Always);
+               (LastCleaning == null || CleaningWaitType == CleaningWaitType.Always);
         }
 
+        /// <summary>
+        /// meant for internal use only
+        /// </summary>
         void ISelfCleaningRollingFileAppender.ActivateOptionsBase()
         {
             base.ActivateOptions();
         }
 
+        /// <summary>
+        /// meant for internal use only
+        /// </summary>
         void ISelfCleaningRollingFileAppender.AppendBase(LoggingEvent loggingEvent)
         {
             base.Append(loggingEvent);
         }
 
+        /// <summary>
+        /// meant for internal use only
+        /// </summary>
         void ISelfCleaningRollingFileAppender.AppendBase(LoggingEvent[] loggingEvents)
         {
             base.Append(loggingEvents);

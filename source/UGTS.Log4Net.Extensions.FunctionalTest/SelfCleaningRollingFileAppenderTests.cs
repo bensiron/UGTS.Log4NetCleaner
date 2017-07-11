@@ -60,7 +60,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
         [Test]
         public void Creates_Cleaning_Check_File_At_First_Log_Call()
         {
-            SetAppender(() => new SelfCleaningRollingFileAppender { CleaningMaximumFileAgeDays = 1 });
+            SetAppender(() => new SelfCleaningRollingFileAppender { CleaningMaximumFileAgeDays = "1" });
 
             VerifyFileDoesNotExist(CleaningCheckPath);
 
@@ -87,7 +87,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             SetAppender(() => new SelfCleaningRollingFileAppender
             {
                 RollingStyle = RollingFileAppender.RollingMode.Date,
-                CleaningMaximumFileAgeDays = 1.5,
+                CleaningMaximumFileAgeDays = "1.5",
                 CleaningWaitType = CleaningWaitType.Always,
                 DatePattern = "dd_MM_yyyy'.txt'"
             });
@@ -154,7 +154,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             SetAppender(() => new SelfCleaningRollingFileAppender
             {
                 RollingStyle = RollingFileAppender.RollingMode.Date,
-                CleaningMaximumFileAgeDays = 1.5,
+                CleaningMaximumFileAgeDays = "1.5",
                 CleaningWaitType = CleaningWaitType.Always,
                 DatePattern = "dd_MM_yyyy'.txt'"
             });
@@ -183,7 +183,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             SetAppender(() => new SelfCleaningRollingFileAppender
             {
                 RollingStyle = RollingFileAppender.RollingMode.Date,
-                CleaningMaximumFileAgeDays = 1.5,
+                CleaningMaximumFileAgeDays = "1.5",
                 CleaningPeriodMinutes = 20,
                 CleaningWaitType = CleaningWaitType.Always,
                 DatePattern = "dd_MM_yyyy'.txt'"
@@ -213,7 +213,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             SetAppender(() => new SelfCleaningRollingFileAppender
             {
                 RollingStyle = RollingFileAppender.RollingMode.Date,
-                CleaningMaximumFileAgeDays = 1.5,
+                CleaningMaximumFileAgeDays = "1.5",
                 CleaningPeriodMinutes = period,
                 CleaningWaitType = CleaningWaitType.Always,
                 DatePattern = "dd_MM_yyyy'.txt'"
@@ -280,7 +280,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             SetAppender(() => new SelfCleaningRollingFileAppender
             {
                 RollingStyle = RollingFileAppender.RollingMode.Date,
-                CleaningMaximumFileAgeDays = 0.5,
+                CleaningMaximumFileAgeDays = "0.5",
                 CleaningFileExtension = extension,
                 CleaningWaitType = CleaningWaitType.Always,
                 DatePattern = "dd_MM_yyyy'.txt'"

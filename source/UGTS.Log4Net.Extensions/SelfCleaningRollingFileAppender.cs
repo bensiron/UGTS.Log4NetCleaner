@@ -16,20 +16,22 @@ namespace UGTS.Log4Net.Extensions
         public SelfCleaningRollingFileAppender()
         {
             _self = this;
-            DateTimeProvider = new UniversalDateTime();
-            Cleaner = new DirectoryCleaner(new FileSystemOperations(new FileSystem()), DateTimeProvider);
+            _dateTimeProvider = new UniversalDateTime();
+            Cleaner = new DirectoryCleaner(new FileSystemOperations(new FileSystem()), _dateTimeProvider);
             TaskRunner = new TaskRunner();
         }
 
-        private long _maxDirectorySizeBytes = long.MaxValue;
+        private long? _maximumDirectorySizeBytes;
+        private double? _maxmimumFileAgeDays;
 
         private readonly ISelfCleaningRollingFileAppender _self; // for unit testing private calls by the instance to itself
+
+        private readonly IDateTime _dateTimeProvider;
+
 
         public DateTime? LastCleaning;
 
         [UsedImplicitly] public IDirectoryCleaner Cleaner { get; set; }
-
-        [UsedImplicitly] public IDateTime DateTimeProvider { get; set; }
 
         [UsedImplicitly] public ITaskRunner TaskRunner { get; set; }
 
@@ -37,13 +39,32 @@ namespace UGTS.Log4Net.Extensions
 
         [UsedImplicitly] public string CleaningFileExtension { get; set; }
 
-        [UsedImplicitly] public double CleaningMaximumFileAgeDays { get; set; } = double.MaxValue;
+        [UsedImplicitly]
+        public string CleaningMaximumFileAgeDays
+        {
+            get
+            {
+                return _maxmimumFileAgeDays?.ToString() ?? "";
+            }
+            set
+            {
+                double days;
+                _maxmimumFileAgeDays = double.TryParse(value, out days) ? days : (double?) null;
+            }
+        }
 
         [UsedImplicitly]
         public string CleaningMaximumDirectorySize
         {
-            get { return _maxDirectorySizeBytes.ToString(NumberFormatInfo.InvariantInfo); }
-            set { _maxDirectorySizeBytes = OptionConverter.ToFileSize(value, _maxDirectorySizeBytes); }
+            get
+            {
+                return _maximumDirectorySizeBytes?.ToString(NumberFormatInfo.InvariantInfo) ?? "";
+            }
+            set
+            {
+                _maximumDirectorySizeBytes = OptionConverter.ToFileSize(value, -1);
+                if (_maximumDirectorySizeBytes <= 0) _maximumDirectorySizeBytes = null;
+            }
         }
 
         [UsedImplicitly] public double CleaningPeriodMinutes { get; set; } = DefaultCleaningPeriodMinutes;
@@ -71,10 +92,10 @@ namespace UGTS.Log4Net.Extensions
 
         public void TryCleanupLogDirectory()
         {
-            if (!HasMaxAgeDays && !HasMaxSizeBytes) return;
+            if (!_maxmimumFileAgeDays.HasValue && !_maximumDirectorySizeBytes.HasValue) return;
             var wasFirstTime = LastCleaning == null;
 
-            var now = DateTimeProvider.Now;
+            var now = _dateTimeProvider.Now;
             if (!_self.IsDueForCleaning(now)) return;
 
             LastCleaning = Cleaner.UpdateLastCleaningTime(CleaningBasePath);
@@ -84,15 +105,17 @@ namespace UGTS.Log4Net.Extensions
 
         public Task CleanupLogDirectory()
         {
-            var now = DateTimeProvider.Now;
-            var cutoffDate = HasMaxAgeDays ? (DateTime?)now.AddDays(-CleaningMaximumFileAgeDays) : null;
-            return TaskRunner.Run(() => Cleaner.Clean(CleaningBasePath, CleaningFileExtension, cutoffDate, HasMaxSizeBytes ? (long?)_maxDirectorySizeBytes : null));
+            var now = _dateTimeProvider.Now;
+            var cutoffDate = _maxmimumFileAgeDays.HasValue ? (DateTime?)now.AddDays(-_maxmimumFileAgeDays.Value) : null;
+            return TaskRunner.Run(() => Cleaner.Clean(CleaningBasePath, CleaningFileExtension, cutoffDate, _maximumDirectorySizeBytes));
         }
 
         public bool IsDueForCleaning(DateTime now)
         {
             if (!LastCleaning.HasValue)
+            {
                 LastCleaning = Cleaner.GetLastCleaningTime(CleaningBasePath) ?? DateTime.MinValue;
+            }
 
             return (now - LastCleaning.Value).TotalMinutes >= CleaningPeriodMinutes;
         }
@@ -117,9 +140,5 @@ namespace UGTS.Log4Net.Extensions
         {
             base.Append(loggingEvents);
         }
-
-        private bool HasMaxAgeDays => CleaningMaximumFileAgeDays <= 400000;
-
-        private bool HasMaxSizeBytes => _maxDirectorySizeBytes < long.MaxValue;
     }
 }

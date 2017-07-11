@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using log4net.Appender;
 using log4net.Core;
+using log4net.Util;
 using UGTS.Log4Net.Extensions.Interfaces;
 
 namespace UGTS.Log4Net.Extensions
@@ -19,6 +21,8 @@ namespace UGTS.Log4Net.Extensions
             TaskRunner = new TaskRunner();
         }
 
+        private long _maxDirectorySizeBytes = long.MaxValue;
+
         private readonly ISelfCleaningRollingFileAppender _self; // for unit testing private calls by the instance to itself
 
         public DateTime? LastCleaning;
@@ -33,9 +37,14 @@ namespace UGTS.Log4Net.Extensions
 
         [UsedImplicitly] public string CleaningFileExtension { get; set; }
 
-        [UsedImplicitly] public double CleaningMaxAgeDays { get; set; } = double.MaxValue;
+        [UsedImplicitly] public double CleaningMaximumFileAgeDays { get; set; } = double.MaxValue;
 
-        [UsedImplicitly] public long CleaningMaxSizeBytes { get; set; } = long.MaxValue;
+        [UsedImplicitly]
+        public string CleaningMaximumDirectorySize
+        {
+            get { return _maxDirectorySizeBytes.ToString(NumberFormatInfo.InvariantInfo); }
+            set { _maxDirectorySizeBytes = OptionConverter.ToFileSize(value, _maxDirectorySizeBytes); }
+        }
 
         [UsedImplicitly] public double CleaningPeriodMinutes { get; set; } = DefaultCleaningPeriodMinutes;
 
@@ -76,8 +85,8 @@ namespace UGTS.Log4Net.Extensions
         public Task CleanupLogDirectory()
         {
             var now = DateTimeProvider.Now;
-            var cutoffDate = HasMaxAgeDays ? (DateTime?)now.AddDays(-CleaningMaxAgeDays) : null;
-            return TaskRunner.Run(() => Cleaner.Clean(CleaningBasePath, CleaningFileExtension, cutoffDate, HasMaxSizeBytes ? (long?)CleaningMaxSizeBytes : null));
+            var cutoffDate = HasMaxAgeDays ? (DateTime?)now.AddDays(-CleaningMaximumFileAgeDays) : null;
+            return TaskRunner.Run(() => Cleaner.Clean(CleaningBasePath, CleaningFileExtension, cutoffDate, HasMaxSizeBytes ? (long?)_maxDirectorySizeBytes : null));
         }
 
         public bool IsDueForCleaning(DateTime now)
@@ -109,8 +118,8 @@ namespace UGTS.Log4Net.Extensions
             base.Append(loggingEvents);
         }
 
-        private bool HasMaxAgeDays => CleaningMaxAgeDays <= 400000;
+        private bool HasMaxAgeDays => CleaningMaximumFileAgeDays <= 400000;
 
-        private bool HasMaxSizeBytes => CleaningMaxSizeBytes < long.MaxValue;
+        private bool HasMaxSizeBytes => _maxDirectorySizeBytes < long.MaxValue;
     }
 }

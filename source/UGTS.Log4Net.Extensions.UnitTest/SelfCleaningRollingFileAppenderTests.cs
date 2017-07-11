@@ -18,7 +18,7 @@ namespace UGTS.Log4Net.Extensions.UnitTest
             var testObject = new SelfCleaningRollingFileAppender
             {
                 Cleaner = DefineMock<IDirectoryCleaner>().Object,
-                TaskRunner = DefineMock<ITaskRunner>().Object
+                CleaningTaskRunner = DefineMock<ITaskRunner>().Object
             };
 
             testObject.SetPrivateFieldValue("_dateTimeProvider", DefineMock<RollingFileAppender.IDateTime>().Object);

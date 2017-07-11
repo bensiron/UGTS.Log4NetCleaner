@@ -9,13 +9,16 @@ namespace UGTS.Log4Net.Extensions
     {
         public Task Run(Action action, bool wait)
         {
-            if (!wait) return Task.Run(action);
+            return !wait ? Task.Run(action) : RunTaskOnSameThread(action);
+        }
 
-            var taskSource = new TaskCompletionSource<bool>();
+        private static Task RunTaskOnSameThread(Action action)
+        {
+            var taskSource = new TaskCompletionSource<object>();
             try
             {
                 action();
-                taskSource.SetResult(true);
+                taskSource.SetResult(null);
             }
             catch (Exception e)
             {

@@ -9,9 +9,19 @@ namespace UGTS.Log4Net.Extensions
     {
         public Task Run(Action action, bool wait)
         {
-            var task = Task.Run(action);
-            if (wait) task.Wait();
-            return task;
+            if (!wait) return Task.Run(action);
+
+            var taskSource = new TaskCompletionSource<bool>();
+            try
+            {
+                action();
+                taskSource.SetResult(true);
+            }
+            catch (Exception e)
+            {
+                taskSource.SetException(e);
+            }
+            return taskSource.Task;
         }
     }
 }

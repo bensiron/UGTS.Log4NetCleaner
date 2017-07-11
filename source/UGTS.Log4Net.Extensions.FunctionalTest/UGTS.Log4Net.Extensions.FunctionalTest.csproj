@@ -48,7 +48,7 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="UGTS.Testing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\UGTS.Testing.1.0.1\lib\net40\UGTS.Testing.dll</HintPath>
+      <HintPath>..\..\packages\UGTS.Testing.1.0.3\lib\net40\UGTS.Testing.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

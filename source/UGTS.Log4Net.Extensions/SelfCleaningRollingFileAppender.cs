@@ -21,7 +21,7 @@ namespace UGTS.Log4Net.Extensions
         /// <summary>
         /// Sets the options used for cleaning log files
         /// </summary>
-        public ISelfCleaner Cleaner { get; set; } = new SelfCleaner();
+        public ILogCleaner Cleaner { get; set; } = new LogCleaner();
 
         /// <summary>
         /// meant for internal use only

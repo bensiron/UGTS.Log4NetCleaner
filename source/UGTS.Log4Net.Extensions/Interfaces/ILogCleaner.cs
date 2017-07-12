@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace UGTS.Log4Net.Extensions.Interfaces
 {
-    public interface ISelfCleaner
+    public interface ILogCleaner
     {
         string BasePath { get; set; }
         IDirectoryCleaner DirectoryCleaner { get; set; }

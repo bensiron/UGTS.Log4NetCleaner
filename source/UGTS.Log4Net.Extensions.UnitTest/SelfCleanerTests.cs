@@ -9,18 +9,18 @@ using UGTS.Testing;
 namespace UGTS.Log4Net.Extensions.UnitTest
 {
     [TestFixture]
-    internal class SelfCleanerTests : TestBase<SelfCleaner, ISelfCleaner>
+    internal class SelfCleanerTests : TestBase<LogCleaner, ILogCleaner>
     {
-        protected override SelfCleaner CreateTestObject()
+        protected override LogCleaner CreateTestObject()
         {
-            var testObject = new SelfCleaner
+            var testObject = new LogCleaner
             {
                 DirectoryCleaner = DefineMock<IDirectoryCleaner>().Object,
                 TaskRunner = DefineMock<ITaskRunner>().Object
             };
 
             testObject.SetPrivateFieldValue("_dateTimeProvider", DefineMock<RollingFileAppender.IDateTime>().Object);
-            testObject.SetPrivateFieldValue("_self", DefineMock<ISelfCleaner>().Object); // ugly hack to test calling other methods on the same object
+            testObject.SetPrivateFieldValue("_self", DefineMock<ILogCleaner>().Object); // ugly hack to test calling other methods on the same object
             return testObject;
         }
 
@@ -71,19 +71,19 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 TestObject.LastCleaning = lastRun;
                 TestObject.BasePath = basePath;
                 Mock<IDirectoryCleaner>().Setup(x => x.UpdateLastCleaningTime(basePath)).Returns(updatedTime);
-                Mock<ISelfCleaner>().Setup(x => x.IsDueForCleaning(It.IsAny<DateTime>()))
+                Mock<ILogCleaner>().Setup(x => x.IsDueForCleaning(It.IsAny<DateTime>()))
                     .Returns(isDue);
 
                 TestInterface.TryCleanup();
 
                 if ((hasMaxAge || hasMaxBytes) && isDue)
                 {
-                    Mock<ISelfCleaner>().Verify(x => x.Cleanup(), Times.Once);
+                    Mock<ILogCleaner>().Verify(x => x.Cleanup(), Times.Once);
                     Assert.That(TestObject.LastCleaning, Is.EqualTo(updatedTime));
                 }
                 else
                 {
-                    Mock<ISelfCleaner>().Verify(x => x.Cleanup(), Times.Never);
+                    Mock<ILogCleaner>().Verify(x => x.Cleanup(), Times.Never);
                     Assert.That(TestObject.LastCleaning, Is.EqualTo(lastRun));
                 }
             }

@@ -52,8 +52,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Annotations.cs" />
-    <Compile Include="Interfaces\ISelfCleaner.cs" />
-    <Compile Include="SelfCleaner.cs" />
+    <Compile Include="Interfaces\ILogCleaner.cs" />
+    <Compile Include="LogCleaner.cs" />
     <Compile Include="WaitType.cs" />
     <Compile Include="Context.cs" />
     <Compile Include="ContextIdPatternConverter.cs" />

@@ -10,7 +10,7 @@ namespace UGTS.Log4Net.Extensions
 {
     /// <summary>
     /// </summary>
-    public class SelfCleaner : ISelfCleaner
+    public class LogCleaner : ILogCleaner
     {
         private const double DefaultCleaningPeriodMinutes = 480.0;
         private const double DefaultMaximumFileAgeDays = 500000.0;
@@ -19,11 +19,11 @@ namespace UGTS.Log4Net.Extensions
         private double _maximumFileAgeDays = DefaultMaximumFileAgeDays;
         private readonly RollingFileAppender.IDateTime _dateTimeProvider;
 
-        private readonly ISelfCleaner _self; // for unit testing private calls by the instance to itself
+        private readonly ILogCleaner _self; // for unit testing private calls by the instance to itself
 
         /// <summary>
         /// </summary>
-        public SelfCleaner()
+        public LogCleaner()
         {
             _self = this;
             _dateTimeProvider = new UniversalDateTime();

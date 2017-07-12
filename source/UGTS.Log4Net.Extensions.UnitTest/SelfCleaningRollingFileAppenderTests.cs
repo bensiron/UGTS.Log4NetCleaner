@@ -13,7 +13,7 @@ namespace UGTS.Log4Net.Extensions.UnitTest
         {
             var testObject = new SelfCleaningRollingFileAppender
             {
-                Cleaner = DefineMock<ISelfCleaner>().Object,
+                Cleaner = DefineMock<ILogCleaner>().Object,
             };
 
             testObject.SetPrivateFieldValue("_self", DefineMock<ISelfCleaningRollingFileAppender>().Object); // ugly hack to test calling other methods on the same object
@@ -28,7 +28,7 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 var file = RandomGenerator.String();
                 TestObject.File = file;
                 Mock<ISelfCleaningRollingFileAppender>().Setup(x => x.ActivateOptionsBase())
-                    .Callback(() => Mock<ISelfCleaner>().VerifySet(x => x.BasePath = file));
+                    .Callback(() => Mock<ILogCleaner>().VerifySet(x => x.BasePath = file));
 
                 TestObject.ActivateOptions();
 
@@ -39,11 +39,11 @@ namespace UGTS.Log4Net.Extensions.UnitTest
             public void Does_Not_Set_BaseFile_If_Already_Set()
             {
                 TestObject.File = RandomGenerator.String();
-                Mock<ISelfCleaner>().Setup(x => x.BasePath).Returns(RandomGenerator.String());
+                Mock<ILogCleaner>().Setup(x => x.BasePath).Returns(RandomGenerator.String());
 
                 TestObject.ActivateOptions();
 
-                Mock<ISelfCleaner>().VerifySet(x => x.BasePath = It.IsAny<string>(), Times.Never);
+                Mock<ILogCleaner>().VerifySet(x => x.BasePath = It.IsAny<string>(), Times.Never);
             }
 
             [Test]
@@ -54,23 +54,23 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                     .Callback(() =>
                     {
                         TestObject.File = file;
-                        Mock<ISelfCleaner>().Verify(x => x.InferFileExtension(It.IsAny<string>()), Times.Never);
+                        Mock<ILogCleaner>().Verify(x => x.InferFileExtension(It.IsAny<string>()), Times.Never);
                     });
 
                 TestObject.ActivateOptions();
 
-                Mock<ISelfCleaner>().Verify(x => x.InferFileExtension(file));
-                Mock<ISelfCleaner>().Verify(x => x.InferFileExtension(It.IsAny<string>()), Times.Once);
+                Mock<ILogCleaner>().Verify(x => x.InferFileExtension(file));
+                Mock<ILogCleaner>().Verify(x => x.InferFileExtension(It.IsAny<string>()), Times.Once);
             }
 
             [Test]
             public void Does_Not_InferFileExtension_If_Already_Set()
             {
-                Mock<ISelfCleaner>().Setup(x => x.FileExtension).Returns(RandomGenerator.String());
+                Mock<ILogCleaner>().Setup(x => x.FileExtension).Returns(RandomGenerator.String());
 
                 TestObject.ActivateOptions();
 
-                Mock<ISelfCleaner>().Verify(x => x.InferFileExtension(It.IsAny<string>()), Times.Never);
+                Mock<ILogCleaner>().Verify(x => x.InferFileExtension(It.IsAny<string>()), Times.Never);
             }
         }
 
@@ -81,13 +81,13 @@ namespace UGTS.Log4Net.Extensions.UnitTest
             {
                 var logEvent = new LoggingEvent(new LoggingEventData());
                 Mock<ISelfCleaningRollingFileAppender>().Setup(x => x.AppendBase(It.IsAny<LoggingEvent>()))
-                    .Callback(() => Mock<ISelfCleaner>().Verify(x => x.TryCleanup(), Times.Once));
+                    .Callback(() => Mock<ILogCleaner>().Verify(x => x.TryCleanup(), Times.Once));
 
                 TestObject.Append(logEvent);
 
                 Mock<ISelfCleaningRollingFileAppender>().Verify(x => x.AppendBase(logEvent));
                 Mock<ISelfCleaningRollingFileAppender>().Verify(x => x.AppendBase(It.IsAny<LoggingEvent>()), Times.Once);
-                Mock<ISelfCleaner>().Verify(x => x.TryCleanup(), Times.Once);
+                Mock<ILogCleaner>().Verify(x => x.TryCleanup(), Times.Once);
             }
         }
 
@@ -98,13 +98,13 @@ namespace UGTS.Log4Net.Extensions.UnitTest
             {
                 var logEvents = new LoggingEvent[0];
                 Mock<ISelfCleaningRollingFileAppender>().Setup(x => x.AppendBase(It.IsAny<LoggingEvent>()))
-                    .Callback(() => Mock<ISelfCleaner>().Verify(x => x.TryCleanup(), Times.Once));
+                    .Callback(() => Mock<ILogCleaner>().Verify(x => x.TryCleanup(), Times.Once));
 
                 TestObject.Append(logEvents);
 
                 Mock<ISelfCleaningRollingFileAppender>().Verify(x => x.AppendBase(logEvents));
                 Mock<ISelfCleaningRollingFileAppender>().Verify(x => x.AppendBase(It.IsAny<LoggingEvent[]>()), Times.Once);
-                Mock<ISelfCleaner>().Verify(x => x.TryCleanup(), Times.Once);
+                Mock<ILogCleaner>().Verify(x => x.TryCleanup(), Times.Once);
             }
         }
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.Threading.Tasks;
 using log4net.Appender;
 using log4net.Core;
@@ -28,11 +27,11 @@ namespace UGTS.Log4Net.Extensions.UnitTest
 
         internal class CleaningMaximumFileAgeDays : SelfCleaningRollingFileAppenderTests
         {
-            [TestCase("1", "1")]
-            [TestCase("89.33", "89.33")]
-            [TestCase("-2.3", "-2.3")]
-            [TestCase("not", "")]
-            public void Reads_Sizes_Correctly(string value, string expected)
+            [TestCase(1, 1.0)]
+            [TestCase(89.33, 89.33)]
+            [TestCase(-2.3, 0.0)]
+            [TestCase(1e7, 500000.0)]
+            public void Reads_Sizes_Correctly(double value, double expected)
             {
                 TestObject.CleaningMaximumFileAgeDays = value;
 
@@ -161,7 +160,7 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 var basePath = RandomGenerator.String();
                 var lastRun = RandomGenerator.DateTime();
                 var updatedTime = RandomGenerator.DateTime();
-                if (hasMaxAge) TestObject.CleaningMaximumFileAgeDays = "1";
+                if (hasMaxAge) TestObject.CleaningMaximumFileAgeDays = 1;
                 if (hasMaxBytes) TestObject.CleaningMaximumDirectorySize = "1";
                 TestObject.LastCleaning = lastRun;
                 TestObject.CleaningBasePath = basePath;
@@ -263,7 +262,7 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 var extension = RandomGenerator.String();
                 TestObject.CleaningBasePath = baseFile;
                 TestObject.CleaningFileExtension = extension;
-                if (hasMaxAge) TestObject.CleaningMaximumFileAgeDays = maxAge.ToString(CultureInfo.InvariantCulture);
+                if (hasMaxAge) TestObject.CleaningMaximumFileAgeDays = maxAge;
                 TestObject.CleaningMaximumDirectorySize = maxBytes.ToString();
                 var expectedCutoff = hasMaxAge ? (DateTime?)now.AddDays(-maxAge) : null;
                 Mock<RollingFileAppender.IDateTime>().Setup(x => x.Now).Returns(now);

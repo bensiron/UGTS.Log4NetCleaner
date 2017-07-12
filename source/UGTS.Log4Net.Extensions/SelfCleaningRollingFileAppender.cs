@@ -14,10 +14,10 @@ namespace UGTS.Log4Net.Extensions
     /// </summary>
     public class SelfCleaningRollingFileAppender : RollingFileAppender, ISelfCleaningRollingFileAppender
     {
-        private const double DefaultCleaningPeriodMinutes = 60.0;
+        private const double DefaultCleaningPeriodMinutes = 480.0;
+        private const double DefaultMaximumFileAgeDays = 500000.0;
 
         /// <summary>
-        /// The one and only constructor for this type
         /// </summary>
         public SelfCleaningRollingFileAppender()
         {
@@ -28,7 +28,7 @@ namespace UGTS.Log4Net.Extensions
         }
 
         private long? _maximumDirectorySizeBytes;
-        private double? _maxmimumFileAgeDays;
+        private double _maximumFileAgeDays = DefaultMaximumFileAgeDays;
 
         private readonly ISelfCleaningRollingFileAppender _self; // for unit testing private calls by the instance to itself
 
@@ -106,19 +106,20 @@ namespace UGTS.Log4Net.Extensions
         /// <para>
         /// Either this value or CleaningMaximumDirectorySize must be specified or no cleaning will be performed.
         /// If this value is blank, then cleaning will only be done according to the CleaningMaximumDirectorySize parameter.
+        /// This value must be greater than or equal to 0 and less than 500000.  Any value greater than or equal to 500000
+        /// is equivalent to having the value blank.
         /// </para>
         /// </remarks>
         [UsedImplicitly]
-        public string CleaningMaximumFileAgeDays
+        public double CleaningMaximumFileAgeDays
         {
             get
             {
-                return _maxmimumFileAgeDays?.ToString() ?? "";
+                return _maximumFileAgeDays;
             }
             set
             {
-                double days;
-                _maxmimumFileAgeDays = double.TryParse(value, out days) ? days : (double?) null;
+                _maximumFileAgeDays = Math.Max(0, Math.Min(DefaultMaximumFileAgeDays, value));
             }
         }
 
@@ -153,7 +154,7 @@ namespace UGTS.Log4Net.Extensions
         /// </summary>
         /// <remarks>
         /// <para>
-        /// This period defaults to 60 minutes if not specified.  Cleaning is performed at the first logging call where it has
+        /// This period defaults to 480 minutes if not specified.  Cleaning is performed at the first logging call where it has
         /// been at least this many minutes since the last cleaning.  The date of the last cleaning is stored between process runs
         /// by using the last modified date (UTC) of the lastcleaning.check file which is placed at the root of the log directory.
         /// </para>
@@ -205,7 +206,7 @@ namespace UGTS.Log4Net.Extensions
         /// </summary>
         public void TryCleanupLogDirectory()
         {
-            if (!_maxmimumFileAgeDays.HasValue && !_maximumDirectorySizeBytes.HasValue) return;
+            if (!HasMaximumFileAgeDays && !_maximumDirectorySizeBytes.HasValue) return;
 
             var now = _dateTimeProvider.Now;
             if (!_self.IsDueForCleaning(now)) return;
@@ -220,7 +221,7 @@ namespace UGTS.Log4Net.Extensions
         public Task CleanupLogDirectory()
         {
             var now = _dateTimeProvider.Now;
-            var cutoffDate = _maxmimumFileAgeDays.HasValue ? (DateTime?)now.AddDays(-_maxmimumFileAgeDays.Value) : null;
+            var cutoffDate = HasMaximumFileAgeDays ? (DateTime?)now.AddDays(-_maximumFileAgeDays) : null;
             return CleaningTaskRunner.Run(() => Cleaner.Clean(CleaningBasePath, CleaningFileExtension, cutoffDate, _maximumDirectorySizeBytes), CleaningWaitType);
         }
 
@@ -260,5 +261,7 @@ namespace UGTS.Log4Net.Extensions
         {
             base.Append(loggingEvents);
         }
+
+        private bool HasMaximumFileAgeDays => _maximumFileAgeDays < DefaultMaximumFileAgeDays;
     }
 }

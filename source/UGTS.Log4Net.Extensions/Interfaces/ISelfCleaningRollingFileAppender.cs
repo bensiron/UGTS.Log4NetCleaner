@@ -11,8 +11,7 @@ namespace UGTS.Log4Net.Extensions.Interfaces
         void AppendBase(LoggingEvent[] loggingEvents);
         void ActivateOptionsBase();
         void TryCleanupLogDirectory();
-        Task CleanupLogDirectory(bool wait);
+        Task CleanupLogDirectory();
         bool IsDueForCleaning(DateTime now);
-        bool ShouldWaitForCleaning();
     }
 }

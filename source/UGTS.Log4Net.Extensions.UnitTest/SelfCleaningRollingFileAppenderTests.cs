@@ -173,43 +173,14 @@ namespace UGTS.Log4Net.Extensions.UnitTest
 
                 if ((hasMaxAge || hasMaxBytes) && isDue)
                 {
-                    Mock<ISelfCleaningRollingFileAppender>().Verify(x => x.CleanupLogDirectory(It.IsAny<bool>()), Times.Once);
+                    Mock<ISelfCleaningRollingFileAppender>().Verify(x => x.CleanupLogDirectory(), Times.Once);
                     Assert.That(TestObject.LastCleaning, Is.EqualTo(updatedTime));
                 }
                 else
                 {
-                    Mock<ISelfCleaningRollingFileAppender>().Verify(x => x.CleanupLogDirectory(It.IsAny<bool>()), Times.Never);
+                    Mock<ISelfCleaningRollingFileAppender>().Verify(x => x.CleanupLogDirectory(), Times.Never);
                     Assert.That(TestObject.LastCleaning, Is.EqualTo(lastRun));
                 }
-            }
-
-            [TestCase(true)]
-            [TestCase(false)]
-            public void Checks_ShouldWait_Before_Setting_LastCleaning(bool firstTime)
-            {
-                var originalLastCleaning = firstTime ? (DateTime?) null : RandomGenerator.DateTime();
-                Mock<ISelfCleaningRollingFileAppender>().Setup(x => x.ShouldWaitForCleaning())
-                    .Callback(() => Assert.That(TestObject.LastCleaning, Is.EqualTo(originalLastCleaning)));
-
-                TestObject.CleaningMaximumFileAgeDays = "1";
-                TestObject.LastCleaning = originalLastCleaning;
-
-                TestObject.TryCleanupLogDirectory();
-
-                Mock<ISelfCleaningRollingFileAppender>().Verify(x => x.ShouldWaitForCleaning(), Times.Once);
-            }
-
-            [TestCase(true)]
-            [TestCase(false)]
-            public void Passes_ShouldWait_To_CleanupLogDirectory(bool shouldWait)
-            {
-                Mock<ISelfCleaningRollingFileAppender>().Setup(x => x.ShouldWaitForCleaning()).Returns(shouldWait);
-                Mock<ISelfCleaningRollingFileAppender>().Setup(x => x.IsDueForCleaning(It.IsAny<DateTime>())).Returns(true);
-                TestObject.CleaningMaximumFileAgeDays = "1";
-                
-                TestObject.TryCleanupLogDirectory();
-
-                Mock<ISelfCleaningRollingFileAppender>().Verify(x => x.CleanupLogDirectory(shouldWait));
             }
         }
 
@@ -250,23 +221,6 @@ namespace UGTS.Log4Net.Extensions.UnitTest
             }
         }
 
-        internal class ShouldWaitForCleaning : SelfCleaningRollingFileAppenderTests
-        {
-            [Test, Combinatorial]
-            public void RunTest(
-                [Values(true, false)] bool firstTime,
-                [Values(CleaningWaitType.Never, CleaningWaitType.FirstTimeOnly, CleaningWaitType.Always)] CleaningWaitType waitType)
-            {
-                TestObject.CleaningWaitType = waitType;
-                TestObject.LastCleaning = firstTime ? (DateTime?) null : RandomGenerator.DateTime();
-                var expected = waitType == CleaningWaitType.Always || waitType == CleaningWaitType.FirstTimeOnly & firstTime;
-
-                var actual = TestInterface.ShouldWaitForCleaning();
-
-                Assert.That(actual, Is.EqualTo(expected));                
-            }
-        }
-
         internal class CleanupLogDirectory: SelfCleaningRollingFileAppenderTests
         {
             private Action _action;
@@ -276,19 +230,21 @@ namespace UGTS.Log4Net.Extensions.UnitTest
             public void Setup()
             {
                 _task = new Task(() => {});
-                Mock<ITaskRunner>().Setup(x => x.Run(It.IsAny<Action>(), It.IsAny<bool>())).Returns(_task)
-                    .Callback<Action, bool>((action, _) => _action = action);
+                Mock<ITaskRunner>().Setup(x => x.Run(It.IsAny<Action>(), It.IsAny<WaitType>())).Returns(_task)
+                    .Callback<Action, WaitType>((action, _) => _action = action);
             }
 
-            [TestCase(true)]
-            [TestCase(false)]
-            public void Runs_Task_To_Clean_And_Returns_Task(bool shouldWait)
+            [TestCase(WaitType.Never)]
+            [TestCase(WaitType.Always)]
+            public void Runs_Task_To_Clean_And_Returns_Task(WaitType waitType)
             {
-                var actual = TestInterface.CleanupLogDirectory(shouldWait);
+                TestObject.CleaningWaitType = waitType;
+
+                var actual = TestInterface.CleanupLogDirectory();
 
                 Assert.That(actual, Is.EqualTo(_task));
-                Mock<ITaskRunner>().Verify(x => x.Run(It.IsAny<Action>(), shouldWait), Times.Once);
-                Mock<ITaskRunner>().Verify(x => x.Run(It.IsAny<Action>(), It.IsAny<bool>()), Times.Once);
+                Mock<ITaskRunner>().Verify(x => x.Run(It.IsAny<Action>(), waitType), Times.Once);
+                Mock<ITaskRunner>().Verify(x => x.Run(It.IsAny<Action>(), It.IsAny<WaitType>()), Times.Once);
                 Mock<IDirectoryCleaner>().Verify(x => x.Clean(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<long?>()), Times.Never);
 
                 _action();
@@ -312,7 +268,7 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 var expectedCutoff = hasMaxAge ? (DateTime?)now.AddDays(-maxAge) : null;
                 Mock<RollingFileAppender.IDateTime>().Setup(x => x.Now).Returns(now);
 
-                TestInterface.CleanupLogDirectory(false);
+                TestInterface.CleanupLogDirectory();
                 _action();
 
                 Mock<IDirectoryCleaner>().Verify(x => x.Clean(baseFile, extension, expectedCutoff, maxBytes), Times.Once);

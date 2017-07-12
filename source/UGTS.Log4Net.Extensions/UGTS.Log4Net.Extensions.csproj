@@ -52,7 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Annotations.cs" />
-    <Compile Include="CleaningWaitType.cs" />
+    <Compile Include="WaitType.cs" />
     <Compile Include="Context.cs" />
     <Compile Include="ContextIdPatternConverter.cs" />
     <Compile Include="DirectoryCleaner.cs" />

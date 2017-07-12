@@ -6,6 +6,6 @@ namespace UGTS.Log4Net.Extensions.Interfaces
 {
     public interface ITaskRunner
     {
-        Task Run(Action action, bool wait);
+        Task Run(Action action, WaitType wait);
     }
 }

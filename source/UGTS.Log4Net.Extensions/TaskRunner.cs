@@ -7,9 +7,9 @@ namespace UGTS.Log4Net.Extensions
 {
     public class TaskRunner : ITaskRunner
     {
-        public Task Run(Action action, bool wait)
+        public Task Run(Action action, WaitType wait)
         {
-            return !wait ? Task.Run(action) : RunTaskOnSameThread(action);
+            return wait == WaitType.Never ? Task.Run(action) : RunTaskOnSameThread(action);
         }
 
         private static Task RunTaskOnSameThread(Action action)

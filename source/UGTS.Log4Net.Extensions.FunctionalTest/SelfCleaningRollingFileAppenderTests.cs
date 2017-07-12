@@ -88,7 +88,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             {
                 RollingStyle = RollingFileAppender.RollingMode.Date,
                 CleaningMaximumFileAgeDays = "1.5",
-                CleaningWaitType = CleaningWaitType.Always,
+                CleaningWaitType = WaitType.Always,
                 DatePattern = "dd_MM_yyyy'.txt'"
             });
 
@@ -115,7 +115,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
                 MaxSizeRollBackups = 1,
                 CountDirection = countDirection,
                 CleaningMaximumDirectorySize = "15KB",
-                CleaningWaitType = CleaningWaitType.Always,
+                CleaningWaitType = WaitType.Always,
                 PreserveLogFileNameExtension = false,
                 MaximumFileSize = "10KB"
             });
@@ -155,7 +155,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             {
                 RollingStyle = RollingFileAppender.RollingMode.Date,
                 CleaningMaximumFileAgeDays = "1.5",
-                CleaningWaitType = CleaningWaitType.Always,
+                CleaningWaitType = WaitType.Always,
                 DatePattern = "dd_MM_yyyy'.txt'"
             });
 
@@ -185,7 +185,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
                 RollingStyle = RollingFileAppender.RollingMode.Date,
                 CleaningMaximumFileAgeDays = "1.5",
                 CleaningPeriodMinutes = 20,
-                CleaningWaitType = CleaningWaitType.Always,
+                CleaningWaitType = WaitType.Always,
                 DatePattern = "dd_MM_yyyy'.txt'"
             });
 
@@ -215,7 +215,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
                 RollingStyle = RollingFileAppender.RollingMode.Date,
                 CleaningMaximumFileAgeDays = "1.5",
                 CleaningPeriodMinutes = period,
-                CleaningWaitType = CleaningWaitType.Always,
+                CleaningWaitType = WaitType.Always,
                 DatePattern = "dd_MM_yyyy'.txt'"
             });
 
@@ -253,7 +253,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             {
                 RollingStyle = RollingFileAppender.RollingMode.Date,
                 CleaningMaximumDirectorySize = "12KB",
-                CleaningWaitType = CleaningWaitType.Always,
+                CleaningWaitType = WaitType.Always,
                 DatePattern = "dd_MM_yyyy'.txt'"
             });
 
@@ -282,7 +282,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
                 RollingStyle = RollingFileAppender.RollingMode.Date,
                 CleaningMaximumFileAgeDays = "0.5",
                 CleaningFileExtension = extension,
-                CleaningWaitType = CleaningWaitType.Always,
+                CleaningWaitType = WaitType.Always,
                 DatePattern = "dd_MM_yyyy'.txt'"
             });
 

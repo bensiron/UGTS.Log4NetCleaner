@@ -65,16 +65,16 @@ namespace UGTS.Log4Net.Extensions
             Log(log, Level.Debug, generator);
         }
 
-        private static Level GetLevel(ILoggerWrapper log, Level defaultLevel)
-        {
-            return log.Logger.Repository.LevelMap.LookupWithDefault(defaultLevel);
-        }
-
         private static void Log(ILoggerWrapper log, Level defaultLevel, Func<string> generator)
         {
             var level = GetLevel(log, defaultLevel);
             var message = generator();
             log.Logger.Log(typeof(LogExtensions), level, message, null);
+        }
+
+        private static Level GetLevel(ILoggerWrapper log, Level defaultLevel)
+        {
+            return log.Logger.Repository.LevelMap.LookupWithDefault(defaultLevel);
         }
     }
 }

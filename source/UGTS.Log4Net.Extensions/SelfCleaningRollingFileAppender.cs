@@ -165,14 +165,12 @@ namespace UGTS.Log4Net.Extensions
         /// </summary>
         /// <remarks>
         /// <para>
-        /// This can take three different values: Never, Always, or FirstTimeOnly (default).
-        /// If the value is Always, then the logging call will block until cleaning is complete.  This is recommended for batch jobs.
-        /// If the value is Never, then cleaning is always performed asynchronously in the background on a different thread.  This is recommended for web and other servers which run continuously.
-        /// If the value is FirstTimeOnly, then cleaning will only be done synchronously if it is triggered by the first logging call for this process run.  This is the default,
-        /// and is used as a compromise to ensure that cleaning is performed periodically to completion, yet preferring to run in the background.
+        /// This can be either: Never or Always
+        /// If the value is Always (default), then log directory cleaning will run on the same thread as logging, and will block until cleaning is complete.  This is recommended for batch and other background jobs.
+        /// If the value is Never, then cleaning is performed asynchronously in the background on a different thread.  This is recommended for web and other processes which run continuously.
         /// </para>
         /// </remarks>
-        [UsedImplicitly] public CleaningWaitType CleaningWaitType { get; set; } = CleaningWaitType.FirstTimeOnly;
+        [UsedImplicitly] public WaitType CleaningWaitType { get; set; } = WaitType.Always;
 
         /// <summary>
         /// meant for internal use only
@@ -208,23 +206,22 @@ namespace UGTS.Log4Net.Extensions
         public void TryCleanupLogDirectory()
         {
             if (!_maxmimumFileAgeDays.HasValue && !_maximumDirectorySizeBytes.HasValue) return;
-            var wait = _self.ShouldWaitForCleaning();
 
             var now = _dateTimeProvider.Now;
             if (!_self.IsDueForCleaning(now)) return;
 
             LastCleaning = Cleaner.UpdateLastCleaningTime(CleaningBasePath);
-            _self.CleanupLogDirectory(wait);
+            _self.CleanupLogDirectory();
         }
 
         /// <summary>
         /// call this to explicitly trigger a cleaning of the log directory
         /// </summary>
-        public Task CleanupLogDirectory(bool wait)
+        public Task CleanupLogDirectory()
         {
             var now = _dateTimeProvider.Now;
             var cutoffDate = _maxmimumFileAgeDays.HasValue ? (DateTime?)now.AddDays(-_maxmimumFileAgeDays.Value) : null;
-            return CleaningTaskRunner.Run(() => Cleaner.Clean(CleaningBasePath, CleaningFileExtension, cutoffDate, _maximumDirectorySizeBytes), wait);
+            return CleaningTaskRunner.Run(() => Cleaner.Clean(CleaningBasePath, CleaningFileExtension, cutoffDate, _maximumDirectorySizeBytes), CleaningWaitType);
         }
 
         /// <summary>
@@ -238,15 +235,6 @@ namespace UGTS.Log4Net.Extensions
             }
 
             return (now - LastCleaning.Value).TotalMinutes >= CleaningPeriodMinutes;
-        }
-
-        /// <summary>
-        /// true if log cleaning should run synchronously
-        /// </summary>
-        bool ISelfCleaningRollingFileAppender.ShouldWaitForCleaning()
-        {
-            return (CleaningWaitType != CleaningWaitType.Never) &&
-               (LastCleaning == null || CleaningWaitType == CleaningWaitType.Always);
         }
 
         /// <summary>

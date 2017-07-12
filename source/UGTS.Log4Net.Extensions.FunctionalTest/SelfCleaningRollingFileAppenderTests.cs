@@ -60,7 +60,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
         [Test]
         public void Creates_Cleaning_Check_File_At_First_Log_Call()
         {
-            SetAppender(() => new SelfCleaningRollingFileAppender { CleaningMaximumFileAgeDays = 1 });
+            SetAppender(() => new SelfCleaningRollingFileAppender { Cleaner = new SelfCleaner { MaximumFileAgeDays = 1 }});
 
             VerifyFileDoesNotExist(CleaningCheckPath);
 
@@ -87,8 +87,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             SetAppender(() => new SelfCleaningRollingFileAppender
             {
                 RollingStyle = RollingFileAppender.RollingMode.Date,
-                CleaningMaximumFileAgeDays = 1.5,
-                CleaningWaitType = WaitType.Always,
+                Cleaner = new SelfCleaner { MaximumFileAgeDays = 1.5 },
                 DatePattern = "dd_MM_yyyy'.txt'"
             });
 
@@ -114,8 +113,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
                 DatePattern = "dd_MM_yyyy'.txt'",
                 MaxSizeRollBackups = 1,
                 CountDirection = countDirection,
-                CleaningMaximumDirectorySize = "15KB",
-                CleaningWaitType = WaitType.Always,
+                Cleaner = new SelfCleaner { MaximumDirectorySize = "15KB" },
                 PreserveLogFileNameExtension = false,
                 MaximumFileSize = "10KB"
             });
@@ -134,7 +132,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
                 _logger.Log(Level.Debug, s.ToString(), null);
             }
 
-            appender.CleaningPeriodMinutes = 0;
+            appender.Cleaner.PeriodMinutes = 0;
             _logger.Log(Level.Debug, "just one more time", null);
 
             VerifyFileCount(2);
@@ -154,8 +152,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             SetAppender(() => new SelfCleaningRollingFileAppender
             {
                 RollingStyle = RollingFileAppender.RollingMode.Date,
-                CleaningMaximumFileAgeDays = 1.5,
-                CleaningWaitType = WaitType.Always,
+                Cleaner = new SelfCleaner { MaximumFileAgeDays = 1.5 },
                 DatePattern = "dd_MM_yyyy'.txt'"
             });
 
@@ -183,8 +180,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             SetAppender(() => new SelfCleaningRollingFileAppender
             {
                 RollingStyle = RollingFileAppender.RollingMode.Date,
-                CleaningMaximumFileAgeDays = 1.5,
-                CleaningPeriodMinutes = 20,
+                Cleaner = new SelfCleaner { MaximumFileAgeDays = 1.5, PeriodMinutes = 20 },
                 DatePattern = "dd_MM_yyyy'.txt'"
             });
 
@@ -212,8 +208,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             SetAppender(() => new SelfCleaningRollingFileAppender
             {
                 RollingStyle = RollingFileAppender.RollingMode.Date,
-                CleaningMaximumFileAgeDays = 1.5,
-                CleaningPeriodMinutes = period,
+                Cleaner = new SelfCleaner { MaximumFileAgeDays = 1.5, PeriodMinutes = period },
                 DatePattern = "dd_MM_yyyy'.txt'"
             });
 
@@ -250,8 +245,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             SetAppender(() => new SelfCleaningRollingFileAppender
             {
                 RollingStyle = RollingFileAppender.RollingMode.Date,
-                CleaningMaximumDirectorySize = "12KB",
-                CleaningWaitType = WaitType.Always,
+                Cleaner = new SelfCleaner { MaximumDirectorySize = "12KB" },
                 DatePattern = "dd_MM_yyyy'.txt'"
             });
 
@@ -278,8 +272,7 @@ namespace UGTS.Log4Net.Extensions.FunctionalTest
             SetAppender(() => new SelfCleaningRollingFileAppender
             {
                 RollingStyle = RollingFileAppender.RollingMode.Date,
-                CleaningMaximumFileAgeDays = 0.5,
-                CleaningFileExtension = extension,
+                Cleaner = new SelfCleaner { MaximumFileAgeDays = 0.5, FileExtension = extension },
                 DatePattern = "dd_MM_yyyy'.txt'"
             });
 

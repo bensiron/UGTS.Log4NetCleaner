@@ -11,7 +11,9 @@ namespace UGTS.Log4Net.Extensions.Interfaces
         IDirectoryCleaner DirectoryCleaner { get; set; }
         string FileExtension { get; set; }
         string MaximumDirectorySize { get; set; }
-        double MaximumFileAgeDays { get; set; }
+        string MaximumFileAgeDays { get; set; }
+        long? MaxDirectorySize { get; set; }
+        double? MaxFileAgeDays { get; set; }
         double PeriodMinutes { get; set; }
         ITaskRunner TaskRunner { get; set; }
         WaitType WaitType { get; set; }

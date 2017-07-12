@@ -24,34 +24,33 @@ namespace UGTS.Log4Net.Extensions.UnitTest
             return testObject;
         }
 
-        internal class CleaningMaximumFileAgeDays : SelfCleanerTests
+        internal class MaximumFileAgeDays : SelfCleanerTests
         {
-            [TestCase(1, 1.0)]
-            [TestCase(89.33, 89.33)]
-            [TestCase(-2.3, 0.0)]
-            [TestCase(1e7, 500000.0)]
-            public void Reads_Sizes_Correctly(double value, double expected)
+            [TestCase("1", 1.0)]
+            [TestCase("89.33", 89.33)]
+            [TestCase("not", null)]
+            public void Reads_Sizes_Correctly(string value, double? expected)
             {
                 TestObject.MaximumFileAgeDays = value;
 
-                Assert.That(TestObject.MaximumFileAgeDays, Is.EqualTo(expected));
+                Assert.That(TestObject.MaxFileAgeDays, Is.EqualTo(expected));
             }
         }
 
-        internal class CleaningMaximumDirectorySize : SelfCleanerTests
+        internal class MaximumDirectorySize : SelfCleanerTests
         {
-            [TestCase("1", "1")]
-            [TestCase("1KB", "1024")]
-            [TestCase("5KB", "5120")]
-            [TestCase("10MB", "10485760")]
-            [TestCase("15MB", "15728640")]
-            [TestCase("4GB", "4294967296")]
-            [TestCase("not", "")]
-            public void Reads_Sizes_Correctly(string value, string expected)
+            [TestCase("1", 1L)]
+            [TestCase("1KB", 1024L)]
+            [TestCase("5KB", 5120L)]
+            [TestCase("10MB", 10485760L)]
+            [TestCase("15MB", 15728640L)]
+            [TestCase("4GB", 4294967296L)]
+            [TestCase("not", null)]
+            public void Reads_Sizes_Correctly(string value, long? expected)
             {
                 TestObject.MaximumDirectorySize = value;
 
-                Assert.That(TestObject.MaximumDirectorySize, Is.EqualTo(expected));
+                Assert.That(TestObject.MaxDirectorySize, Is.EqualTo(expected));
             }
         }
 
@@ -66,8 +65,8 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 var basePath = RandomGenerator.String();
                 var lastRun = RandomGenerator.DateTime();
                 var updatedTime = RandomGenerator.DateTime();
-                if (hasMaxAge) TestObject.MaximumFileAgeDays = 1;
-                if (hasMaxBytes) TestObject.MaximumDirectorySize = "1";
+                if (hasMaxAge) TestObject.MaxFileAgeDays = 1;
+                if (hasMaxBytes) TestObject.MaxDirectorySize = 1;
                 TestObject.LastCleaning = lastRun;
                 TestObject.BasePath = basePath;
                 Mock<IDirectoryCleaner>().Setup(x => x.UpdateLastCleaningTime(basePath)).Returns(updatedTime);
@@ -168,8 +167,8 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 var extension = RandomGenerator.String();
                 TestObject.BasePath = baseFile;
                 TestObject.FileExtension = extension;
-                if (hasMaxAge) TestObject.MaximumFileAgeDays = maxAge;
-                TestObject.MaximumDirectorySize = maxBytes.ToString();
+                if (hasMaxAge) TestObject.MaxFileAgeDays = maxAge;
+                TestObject.MaxDirectorySize = maxBytes;
                 var expectedCutoff = hasMaxAge ? (DateTime?)now.AddDays(-maxAge) : null;
                 Mock<RollingFileAppender.IDateTime>().Setup(x => x.Now).Returns(now);
 

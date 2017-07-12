@@ -13,10 +13,9 @@ namespace UGTS.Log4Net.Extensions
     public class LogCleaner : ILogCleaner
     {
         private const double DefaultCleaningPeriodMinutes = 480.0;
-        private const double DefaultMaximumFileAgeDays = 500000.0;
 
         private long? _maximumDirectorySizeBytes;
-        private double _maximumFileAgeDays = DefaultMaximumFileAgeDays;
+        private double? _maximumFileAgeDays;
         private readonly RollingFileAppender.IDateTime _dateTimeProvider;
 
         private readonly ILogCleaner _self; // for unit testing private calls by the instance to itself
@@ -39,7 +38,6 @@ namespace UGTS.Log4Net.Extensions
         /// Clear this to trigger a log directory cleaning at the next logging call.
         /// </para>
         /// </remarks>
-        [UsedImplicitly]
         public DateTime? LastCleaning;
 
         /// <summary>
@@ -50,7 +48,6 @@ namespace UGTS.Log4Net.Extensions
         /// Use this to inject your own implementation of directory cleaning.
         /// </para>
         /// </remarks>
-        [UsedImplicitly]
         public IDirectoryCleaner DirectoryCleaner { get; set; }
 
         /// <summary>
@@ -62,7 +59,6 @@ namespace UGTS.Log4Net.Extensions
         /// Use this to inject an alternative implementation.
         /// </para>
         /// </remarks>
-        [UsedImplicitly]
         public ITaskRunner TaskRunner { get; set; }
 
         /// <summary>
@@ -78,7 +74,6 @@ namespace UGTS.Log4Net.Extensions
         /// result in non-log files being removed.
         /// </para>
         /// </remarks>
-        [UsedImplicitly]
         public string BasePath { get; set; }
 
         /// <summary>
@@ -98,7 +93,6 @@ namespace UGTS.Log4Net.Extensions
         /// but not app.log or app.log.14 or app.txt.log.
         /// </para>
         /// </remarks>
-        [UsedImplicitly]
         public string FileExtension { get; set; }
 
         /// <summary>
@@ -108,15 +102,25 @@ namespace UGTS.Log4Net.Extensions
         /// <para>
         /// Either this value or CleaningMaximumDirectorySize must be specified or no cleaning will be performed.
         /// If this value is blank, then cleaning will only be done according to the CleaningMaximumDirectorySize parameter.
-        /// This value must be greater than or equal to 0 and less than 500000.  Any value greater than or equal to 500000
-        /// is equivalent to having the value blank.
         /// </para>
         /// </remarks>
-        [UsedImplicitly]
-        public double MaximumFileAgeDays
+        public string MaximumFileAgeDays
+        {
+            get { return _maximumFileAgeDays?.ToString() ?? ""; }
+            set
+            {
+                double days;
+                _maximumFileAgeDays = double.TryParse(value, out days) ? (double?)days : null;
+            }
+        }
+
+        /// <summary>
+        /// The numeric equivalent of MaximumFileAgeDays
+        /// </summary>
+        public double? MaxFileAgeDays
         {
             get { return _maximumFileAgeDays; }
-            set { _maximumFileAgeDays = Math.Max(0, Math.Min(DefaultMaximumFileAgeDays, value)); }
+            set { _maximumFileAgeDays = value; }
         }
 
         /// <summary>
@@ -131,7 +135,6 @@ namespace UGTS.Log4Net.Extensions
         /// If this value is blank, then cleaning will only be done according to the CleaningMaximumFileAgeDays parameter.
         /// </para>
         /// </remarks>
-        [UsedImplicitly]
         public string MaximumDirectorySize
         {
             get
@@ -146,6 +149,16 @@ namespace UGTS.Log4Net.Extensions
         }
 
         /// <summary>
+        /// The numeric equivalent of the string property MaximumDirectorySize
+        /// </summary>
+        [UsedImplicitly]
+        public long? MaxDirectorySize
+        {
+            get { return _maximumDirectorySizeBytes; }
+            set { _maximumDirectorySizeBytes = value; }
+        }
+
+        /// <summary>
         /// Gets or sets the decimal number of minutes to wait between directory cleaning checks.
         /// </summary>
         /// <remarks>
@@ -155,7 +168,6 @@ namespace UGTS.Log4Net.Extensions
         /// by using the last modified date (UTC) of the lastcleaning.check file which is placed at the root of the log directory.
         /// </para>
         /// </remarks>
-        [UsedImplicitly]
         public double PeriodMinutes { get; set; } = DefaultCleaningPeriodMinutes;
 
         /// <summary>
@@ -168,16 +180,14 @@ namespace UGTS.Log4Net.Extensions
         /// If the value is Never, then cleaning is performed asynchronously in the background on a different thread.  This is recommended for web and other processes which run continuously.
         /// </para>
         /// </remarks>
-        [UsedImplicitly]
         public WaitType WaitType { get; set; } = WaitType.Always;
 
         /// <summary>
         /// meant for internal use only
         /// </summary>
-        [UsedImplicitly]
         public void TryCleanup()
         {
-            if (!HasMaximumFileAgeDays && !_maximumDirectorySizeBytes.HasValue) return;
+            if (!(MaxFileAgeDays.HasValue || MaxDirectorySize.HasValue)) return;
 
             var now = _dateTimeProvider.Now;
             if (!_self.IsDueForCleaning(now)) return;
@@ -189,18 +199,16 @@ namespace UGTS.Log4Net.Extensions
         /// <summary>
         /// call this to explicitly trigger a cleaning of the log directory
         /// </summary>
-        [UsedImplicitly]
         public Task Cleanup()
         {
             var now = _dateTimeProvider.Now;
-            var cutoffDate = HasMaximumFileAgeDays ? (DateTime?)now.AddDays(-MaximumFileAgeDays) : null;
-            return TaskRunner.Run(() => DirectoryCleaner.Clean(BasePath, FileExtension, cutoffDate, _maximumDirectorySizeBytes), WaitType);
+            var cutoffDate = MaxFileAgeDays.HasValue ? (DateTime?)now.AddDays(-MaxFileAgeDays.Value) : null;
+            return TaskRunner.Run(() => DirectoryCleaner.Clean(BasePath, FileExtension, cutoffDate, MaxDirectorySize), WaitType);
         }
 
         /// <summary>
         /// true if the next logging call will trigger a cleaning of the log directory
         /// </summary>
-        [UsedImplicitly]
         public bool IsDueForCleaning(DateTime now)
         {
             if (!LastCleaning.HasValue)
@@ -214,12 +222,9 @@ namespace UGTS.Log4Net.Extensions
         /// <summary>
         /// Infers the file extension from the given log file
         /// </summary>
-        /// <param name="path"></param>
         public void InferFileExtension(string path)
         {
             FileExtension = DirectoryCleaner.GetFileExtension(path);
         }
-
-        private bool HasMaximumFileAgeDays => _maximumFileAgeDays < DefaultMaximumFileAgeDays;
     }
 }

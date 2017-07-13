@@ -55,8 +55,8 @@
     <Compile Include="Interfaces\ILogCleaner.cs" />
     <Compile Include="LogCleaner.cs" />
     <Compile Include="WaitType.cs" />
-    <Compile Include="Context.cs" />
-    <Compile Include="ContextIdPatternConverter.cs" />
+    <Compile Include="WebContext.cs" />
+    <Compile Include="WebRequestIdPatternConverter.cs" />
     <Compile Include="DirectoryCleaner.cs" />
     <Compile Include="FileSystemOperations.cs" />
     <Compile Include="ExtendedPatternLayout.cs" />

@@ -5,7 +5,8 @@ using log4net.Util;
 namespace UGTS.Log4Net.Extensions
 {
     /// <summary>
-    /// adds support for the ctxid pattern key
+    /// adds support for the reqid pattern key, which evaluates to a unique incrementing id
+    /// for each distinct http context (web request), or 0 if not in the context of a web request.
     /// </summary>
     [UsedImplicitly]
     public class ExtendedPatternLayout : PatternLayout
@@ -15,7 +16,7 @@ namespace UGTS.Log4Net.Extensions
         /// </summary>
         public ExtendedPatternLayout()
         {
-            AddConverter(new ConverterInfo { Name = "ctxid", Type = typeof(ContextIdPatternConverter) });
+            AddConverter(new ConverterInfo { Name = "reqid", Type = typeof(WebRequestIdPatternConverter) });
         }
     }
 }

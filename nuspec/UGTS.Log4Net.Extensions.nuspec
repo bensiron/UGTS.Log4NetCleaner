@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>UGTS.Log4Net.Extensions</id>
-    <version>1.2.2</version>
+    <version>1.2.3</version>
     <title>UGTS.Log4Net.Extensions</title>
     <authors>Ben Siron</authors>
     <owners>Ben Siron</owners>

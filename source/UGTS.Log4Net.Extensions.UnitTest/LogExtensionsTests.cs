@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
+using JetBrains.Annotations;
 using log4net;
 using log4net.Core;
 using log4net.Repository;
@@ -10,7 +12,7 @@ using UGTS.Testing;
 namespace UGTS.Log4Net.Extensions.UnitTest
 {
     [TestFixture]
-    public class Log4NetExtensionsTests
+    public class LogExtensionsTests
     {
         private Mock<ILog> _log;
         private Mock<ILogger> _logger;
@@ -62,6 +64,25 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 message => _log.Object.Debug(() => message));
         }
 
+        [Test, Combinatorial]
+        public void WithLevel([Values(true, false)] bool enabled, [ValueSource(nameof(LevelSource))] Level level)
+        {
+            var expectedMessage = RandomGenerator.String();
+            var expectedTimes = enabled ? 1 : 0;
+            _logger.Setup(x => x.IsEnabledFor(level)).Returns(enabled);
+            var expectedLevel = SetupGetLevel(level);
+
+            _log.Object.WithLevel(level, expectedMessage);
+
+            VerifyLogged(expectedTimes, expectedLevel, expectedMessage);
+        }
+
+        [UsedImplicitly]
+        private static IEnumerable<Level> LevelSource()
+        {
+            return new [] {Level.Debug, Level.Info, Level.Warn, Level.Error, Level.Fatal};
+        }
+
         private void VerifyLogging(Expression<Func<ILog, bool>> mockExpression, Level level, bool enabled, Action<string> testAction)
         {
             var expectedMessage = RandomGenerator.String();
@@ -71,8 +92,7 @@ namespace UGTS.Log4Net.Extensions.UnitTest
 
             testAction(expectedMessage);
 
-            if (expectedTimes > 0) _logger.Verify(x => x.Log(typeof(LogExtensions), expectedLevel, expectedMessage, null));
-            _logger.Verify(x => x.Log(It.IsAny<Type>(), It.IsAny<Level>(), It.IsAny<string>(), It.IsAny<Exception>()), Times.Exactly(expectedTimes));
+            VerifyLogged(expectedTimes, expectedLevel, expectedMessage);
         }
 
         private Level SetupGetLevel(Level input)
@@ -85,6 +105,12 @@ namespace UGTS.Log4Net.Extensions.UnitTest
             _logger.Setup(x => x.Repository).Returns(repo.Object);
             repo.Setup(x => x.LevelMap).Returns(map);
             return output;
+        }
+
+        private void VerifyLogged(int expectedTimes, Level expectedLevel, string expectedMessage)
+        {
+            if (expectedTimes > 0) _logger.Verify(x => x.Log(typeof(LogExtensions), expectedLevel, expectedMessage, null));
+            _logger.Verify(x => x.Log(It.IsAny<Type>(), It.IsAny<Level>(), It.IsAny<string>(), It.IsAny<Exception>()), Times.Exactly(expectedTimes));
         }
     }
 }

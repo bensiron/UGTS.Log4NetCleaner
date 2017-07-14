@@ -11,6 +11,16 @@ namespace UGTS.Log4Net.Extensions
     public static class LogExtensions
     {
         /// <summary>
+        /// Logs a message at the specified level chosen at runtime.
+        /// </summary>
+        [UsedImplicitly]
+        public static void WithLevel(this ILog log, Level level, string message)
+        {
+            if (!log.Logger.IsEnabledFor(level)) return;
+            Log(log, level, message);
+        }
+
+        /// <summary>
         /// Syntactic sugar for if (log.Is[Level]Enabled) log.[Level](generator());
         /// Takes care to preserve any call stack information output in the logs.
         /// </summary>
@@ -18,7 +28,7 @@ namespace UGTS.Log4Net.Extensions
         public static void Fatal(this ILog log, Func<string> generator)
         {
             if (!log.IsFatalEnabled) return;
-            Log(log, Level.Fatal, generator);
+            Log(log, Level.Fatal, generator());
         }
 
         /// <summary>
@@ -29,7 +39,7 @@ namespace UGTS.Log4Net.Extensions
         public static void Error(this ILog log, Func<string> generator)
         {
             if (!log.IsErrorEnabled) return;
-            Log(log, Level.Error, generator);
+            Log(log, Level.Error, generator());
         }
 
         /// <summary>
@@ -40,7 +50,7 @@ namespace UGTS.Log4Net.Extensions
         public static void Warn(this ILog log, Func<string> generator)
         {
             if (!log.IsWarnEnabled) return;
-            Log(log, Level.Warn, generator);
+            Log(log, Level.Warn, generator());
         }
 
         /// <summary>
@@ -51,7 +61,7 @@ namespace UGTS.Log4Net.Extensions
         public static void Info(this ILog log, Func<string> generator)
         {
             if (!log.IsInfoEnabled) return;
-            Log(log, Level.Info, generator);
+            Log(log, Level.Info, generator());
         }
 
         /// <summary>
@@ -62,13 +72,12 @@ namespace UGTS.Log4Net.Extensions
         public static void Debug(this ILog log, Func<string> generator)
         {
             if (!log.IsDebugEnabled) return;
-            Log(log, Level.Debug, generator);
+            Log(log, Level.Debug, generator());
         }
 
-        private static void Log(ILoggerWrapper log, Level defaultLevel, Func<string> generator)
+        private static void Log(ILoggerWrapper log, Level defaultLevel, string message)
         {
             var level = GetLevel(log, defaultLevel);
-            var message = generator();
             log.Logger.Log(typeof(LogExtensions), level, message, null);
         }
 

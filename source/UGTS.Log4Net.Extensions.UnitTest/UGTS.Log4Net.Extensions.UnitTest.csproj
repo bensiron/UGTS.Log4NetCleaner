@@ -71,7 +71,7 @@
     <Compile Include="FileSystemOperationsTests.cs" />
     <Compile Include="SelfCleanerTests.cs" />
     <Compile Include="SelfCleaningRollingFileAppenderTests.cs" />
-    <Compile Include="Log4NetExtensionsTests.cs" />
+    <Compile Include="LogExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

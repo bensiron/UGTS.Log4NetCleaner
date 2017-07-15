@@ -7,10 +7,10 @@
     <authors>Ben Siron</authors>
     <owners>Ben Siron</owners>
     <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
-    <projectUrl>https://ugts.org</projectUrl>
+    <projectUrl>https://github.com/bensiron/UGTS.Log4Net.Extensions</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>log4net Extensions</description>
-    <summary>log4net Extensions</summary>
+    <description>log4net extensions supporting a self-cleaning rolling file appender, and 'lambda logging'</description>
+    <summary>log4net extensions supporting a self-cleaning rolling file appender, and 'lambda logging'</summary>
     <copyright>Copyright 2017</copyright>
     <tags>UGTS Log4Net Extensions</tags>
     <dependencies>

@@ -20,7 +20,6 @@
   </metadata>
   <files>
      <file src="..\source\ugts.Log4NetCleaner\bin\Release\UGTS.Log4NetCleaner.dll" target="lib\net40\UGTS.Log4NetCleaner.dll" />
-     <file src="..\source\ugts.Log4NetCleaner\bin\Release\UGTS.Log4NetCleaner.pdb" target="lib\net40\UGTS.Log4NetCleaner.pdb" />
      <file src="..\source\ugts.Log4NetCleaner\bin\Release\UGTS.Log4NetCleaner.xml" target="lib\net40\UGTS.Log4NetCleaner.xml" />
  </files>
 </package>

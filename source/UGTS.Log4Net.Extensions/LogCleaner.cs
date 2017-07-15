@@ -69,8 +69,8 @@ namespace UGTS.Log4Net.Extensions
         /// If this value is omitted, it will be inferred from the File property.
         /// Sometimes inference does not work if the File is not a directory but also contains
         /// part of the file name.
-        /// Use care when setting this property and the CleaningFileExtension.  The appender
-        /// will clean any directory you give it, and with a CleaningFileExtension of * this can 
+        /// Use care when setting this property and the FileExtension.  The appender
+        /// will clean any directory you give it, and with a FileExtension of * this can 
         /// result in non-log files being removed.
         /// </para>
         /// </remarks>
@@ -100,8 +100,8 @@ namespace UGTS.Log4Net.Extensions
         /// </summary>
         /// <remarks>
         /// <para>
-        /// Either this value or CleaningMaximumDirectorySize must be specified or no cleaning will be performed.
-        /// If this value is blank, then cleaning will only be done according to the CleaningMaximumDirectorySize parameter.
+        /// Either this value or MaximumDirectorySize must be specified or no cleaning will be performed.
+        /// If this value is blank, then cleaning will only be done according to the MaximumDirectorySize parameter.
         /// </para>
         /// </remarks>
         public string MaximumFileAgeDays
@@ -131,8 +131,8 @@ namespace UGTS.Log4Net.Extensions
         /// If this value is specified, then log files (from oldest to newest) will be deleted until the total size
         /// of log files is less than the directory maximum.  This parameter must be an integer optionally suffixed 
         /// with KB, MB, or GB.  For example, 100MB specifies a maxmimum directory size of 100 megabytes.
-        /// Either this value or CleaningMaximumFileAgeDays must be specified or no cleaning will be performed.
-        /// If this value is blank, then cleaning will only be done according to the CleaningMaximumFileAgeDays parameter.
+        /// Either this value or MaximumFileAgeDays must be specified or no cleaning will be performed.
+        /// If this value is blank, then cleaning will only be done according to the MaximumFileAgeDays parameter.
         /// </para>
         /// </remarks>
         public string MaximumDirectorySize

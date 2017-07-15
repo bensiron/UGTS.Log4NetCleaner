@@ -29,6 +29,31 @@ The SelfCleaningRollingFileAppender is a RollingFileAppender which periodically 
   </log4net>
 ```
   
-In this example, the only new definitions beyond what RollingFileAppender does is the type of the appender, and the <cleaner> tag, with the properties defined under it.  This example will clean out any log files older than 90 days or will remove the oldest log files with the total size of all log files exceeds 100 megabytes.
+In this example, the only new definitions beyond what RollingFileAppender uses are: the type of the appender, and the cleaner tag with the properties defined under it.  This example will clean out any log files older than 90 days and will remove the oldest log files when the total size of all log files exceeds 100 megabytes.
+
+The properties defined under the cleaner tag include:
+
+- fileExtension:
+        Use this to restrict which files by file extension will be cleaned up.
+        If this property is omitted, the file extension will be inferred from the extension of the log files created.  Usually inference works well enough so that you need not specify this property.
+        You can explicitly set this property to * or blank to clean all files whatever the file extension or lack thereof.
+        The lastcleaning.check file is never removed regardless of the value of this property.
+        This extension can include or omit a leading dot, it will not affect the results, and the extension is not case sensititve.
+        Rolling backup files ending in .ext.N will also be removed along with files ending in .ext
+        For example, if this property has value 'txt', then the log files app.txt and app.txt.14 would be removed but not app.log or app.log.14 or app.txt.log.
+
+- maximumDirectorySize: 
+        If this value is specified, then log files (from oldest to newest) will be deleted until the total size
+        of log files is less than the directory maximum.  This parameter must be an integer optionally suffixed 
+        with KB, MB, or GB.  For example, 100MB specifies a maxmimum directory size of 100 megabytes.
+        Either this value or MaximumFileAgeDays must be specified or no cleaning will be performed.
+        If this value is blank, then cleaning will only be done according to the MaximumFileAgeDays parameter.
+
+- maximumFileAgeDays:
+        Either this value or MaximumDirectorySize must be specified or no cleaning will be performed.
+        If this value is blank, then cleaning will only be done according to the MaximumDirectorySize parameter.
+       
+ 
+  
 
 

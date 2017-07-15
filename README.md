@@ -33,6 +33,13 @@ In this example, the only new definitions beyond what RollingFileAppender uses a
 
 The properties defined under the cleaner tag include:
 
+- basePath:
+        Gets or sets the root directory of the log files for cleaning.
+        If this value is omitted, it will be inferred from the File property.
+        Sometimes inference does not work if the File is not a directory but also contains part of the file name.
+        Use care when setting this property and the FileExtension.  The appender will clean any directory you give it, and with a FileExtension of * this can 
+        result in non-log files being removed.
+
 - fileExtension:
         Use this to restrict which files by file extension will be cleaned up.
         If this property is omitted, the file extension will be inferred from the extension of the log files created.  Usually inference works well enough so that you need not specify this property.
@@ -43,6 +50,7 @@ The properties defined under the cleaner tag include:
         For example, if this property has value 'txt', then the log files app.txt and app.txt.14 would be removed but not app.log or app.log.14 or app.txt.log.
 
 - maximumDirectorySize: 
+        Gets or sets the maximum age of log files (in a decimal number of days) to keep when cleaning the log directory.
         If this value is specified, then log files (from oldest to newest) will be deleted until the total size
         of log files is less than the directory maximum.  This parameter must be an integer optionally suffixed 
         with KB, MB, or GB.  For example, 100MB specifies a maxmimum directory size of 100 megabytes.
@@ -50,10 +58,22 @@ The properties defined under the cleaner tag include:
         If this value is blank, then cleaning will only be done according to the MaximumFileAgeDays parameter.
 
 - maximumFileAgeDays:
+        Gets or sets the maximum allowed size of the log directory in bytes for all log files found.
         Either this value or MaximumDirectorySize must be specified or no cleaning will be performed.
         If this value is blank, then cleaning will only be done according to the MaximumDirectorySize parameter.
-       
- 
+
+- periodMinutes:
+        Gets or sets the decimal number of minutes to wait between directory cleaning checks.
+        This period defaults to 480 minutes if not specified.  Cleaning is performed at the first logging call where it has
+        been at least this many minutes since the last cleaning.  The date of the last cleaning is stored between process runs
+        by using the last modified date (UTC) of the lastcleaning.check file which is placed at the root of the log directory.
+        
+- waitType:
+        Gets or sets the type of waiting to do when cleaning the log directory.
+        This can be either: Never or Always
+        If the value is Always (default), then log directory cleaning will run on the same thread as logging, and will block until cleaning is complete.  This is recommended for batch and other background jobs.
+        If the value is Never, then cleaning is performed asynchronously in the background on a different thread.  This is recommended for web and other processes which run continuously.
+
   
 
 

@@ -3,7 +3,10 @@ Provides the SelfCleaningRollingFileAppender log4net class, extensions methods, 
 
 This library requires log4net 2.0.8 or higher and .NET 4.5 or higher.  .NET Core/Standard libraries are not supported.
 
-If you have any issues with this library, would like to make requests, or submit/suggest improvements, please raise an issue.
+This library is released under the MIT license.  Full details at /license/license.txt.
+
+If you have any issues with this library, would like to make requests, or submit/suggest improvements, please raise an issue.  The library has served my needs but I am holding
+off on upgrading it further until I see some interest from others about what it needs most from here.
 
 
 ## SelfCleaningRollingFileAppender
@@ -105,4 +108,10 @@ Notes:
 
 ## UGTS.Log4Net.Extensions.ExtendedPatternLayout
 
-This defines the %reqid pattern key.  This is intended for use an on ASP.NET web server where HttpContext.Current != null.  Each unique HTTP web request will be assigned an autoincrementing 64-bit integer.  %reqid will log this number, or 0 if the logging occurs on a thread outside of a web request.  This counter will reset to start at 1 whenever the website's application pool is restarted, and the number is not unique between processes.
+This defines the %reqid pattern key.  This is intended for use an on ASP.NET web server where HttpContext.Current != null.  Each unique HTTP web request will be assigned an autoincrementing 64-bit integer.  %reqid will log this number, or 0 if the logging occurs on a thread outside of a web request.  This counter will reset to start at 1 whenever the website's application pool is restarted, and the number is not unique between processes.  Here is an example of use of the %reqid logging key:
+
+```
+      <layout type="UGTS.Log4Net.Extensions.ExtendedPatternLayout, UGTS.Log4Net.Extensions">
+        <conversionPattern value="%-5p %d{yyyy-MM-dd HH:mm:ss.fff} reqid:%-5reqid %-18.18c{1} - %m%n" />
+      </layout>
+```

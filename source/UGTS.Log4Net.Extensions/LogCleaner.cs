@@ -227,6 +227,11 @@ namespace UGTS.Log4Net.Extensions
         public void InferFileExtension(string path)
         {
             FileExtension = DirectoryCleaner.GetFileExtension(path);
+            if (string.IsNullOrWhiteSpace(FileExtension))
+            {
+                LogLog.Warn(typeof (LogCleaner),
+                    $"Could not infer FileExtension property for log file cleaning - no file extension was specified, and the log file '{path}' does not have a file extension.");
+            }
         }
     }
 }

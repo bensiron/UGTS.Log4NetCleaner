@@ -1,5 +1,6 @@
 ﻿using log4net.Appender;
 using log4net.Core;
+using log4net.Util;
 using UGTS.Log4Net.Extensions.Interfaces;
 
 namespace UGTS.Log4Net.Extensions
@@ -31,6 +32,11 @@ namespace UGTS.Log4Net.Extensions
             if (Cleaner.BasePath == null) Cleaner.BasePath = File;
             _self.ActivateOptionsBase();
             if (Cleaner.FileExtension == null) Cleaner.InferFileExtension(File);
+
+            if (Cleaner.MaxFileAgeDays == null && Cleaner.MaxDirectorySize == null)
+            {
+                LogLog.Warn(typeof(LogCleaner), $"Log cleaning using the SelfCleaningRollingFileAppender has been disabled: no MaximumFileAgeDays or MaximumDirectorySize was specified.");
+            }
         }
 
         /// <summary>

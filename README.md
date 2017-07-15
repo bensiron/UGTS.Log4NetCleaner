@@ -1,11 +1,11 @@
 # UGTS.Log4Net.Extensions
-Provides the SelfCleaningRollingFileAppender log4net class, extensions methods, and the 'reqid' log pattern key which logs a unique id for each unique web request.
+Provides the SelfCleaningRollingFileAppender log4net class.
 
-This library requires log4net 2.0.8 or higher and .NET 4.5 or higher.  .NET Core/Standard libraries are not supported.
+This requires log4net 2.0.8 or higher and .NET 4.5 or higher.  .NET Core/Standard libraries are not supported.
 
-This library is released under the MIT license.  Full details at /license/license.txt.
+This is released under the MIT license.  Full details at /license/license.txt.
 
-If you have any issues with this library, would like to make requests, or submit/suggest improvements, please raise an issue.  The library has served my needs but I am holding
+If you have any issues with this appender, would like to make requests, or submit/suggest improvements, please raise an issue.  The library has served my needs but I am holding
 off on upgrading it further until I see some interest from others about what it needs most from here.
 
 
@@ -90,28 +90,3 @@ Notes:
 - You should not need to define the waitType property to Never unless the application does logging on a thread where occasional delays will be noticeable when the period check for old files is performed.  The default waitType is set to Always to handle the case of background processes where logging delays are not critical.  If the waitType is set to Never, and the process exits while in the middle of cleaning up the log directory, then cleaning will be retried (also with a wait type of Never) the next time the process is started.
 
 - It is not recommended to have multiple processes setup to clean the same logging directory with the same cleaning parameters.  If this is configured, all processes will attempt to clean the directory at about the same time.  The first one to start will get the work done, and the rest may silently continue when they attempt to delete files that no longer exist.
-
-
-## ILog Extension Methods defined in UGTS.Log4Net.Extensions.LogExtensions
-
-- ```log.Debug/Info/Warn/Error/Fatal(Func<string> generator)```:  does lazy evaluation of the message to log.  This form is useful when it is prohibitively expensive to calculate the message to be logged unless it needs to be logged.  The following lines of code are equivalent:
-    ``` 
-    log.Debug(() => message);
-    
-    if (log.IsDebugEnabled) log.Debug(message);
-    ```
-    
-    Because calling this extension method results in a change in the call stack, special care is taken to ensure that if the call stack is logged, the caller's stack frame is used, rather than the stack frames within the LogExtensions module.
-    
-- ```log.WithLevel(level, message)```:  this is a convenience method to dynamically choose the level at which to log the message.
-
-
-## UGTS.Log4Net.Extensions.ExtendedPatternLayout
-
-This defines the %reqid pattern key.  This is intended for use an on ASP.NET web server where HttpContext.Current != null.  Each unique HTTP web request will be assigned an autoincrementing 64-bit integer.  %reqid will log this number, or 0 if the logging occurs on a thread outside of a web request.  This counter will reset to start at 1 whenever the website's application pool is restarted, and the number is not unique between processes.  Here is an example of use of the %reqid logging key:
-
-```
-      <layout type="UGTS.Log4Net.Extensions.ExtendedPatternLayout, UGTS.Log4Net.Extensions">
-        <conversionPattern value="%-5p %d{yyyy-MM-dd HH:mm:ss.fff} reqid:%-5reqid %-18.18c{1} - %m%n" />
-      </layout>
-```

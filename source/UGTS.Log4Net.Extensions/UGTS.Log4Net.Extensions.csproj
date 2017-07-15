@@ -42,24 +42,14 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Annotations.cs" />
     <Compile Include="Interfaces\ILogCleaner.cs" />
     <Compile Include="LogCleaner.cs" />
     <Compile Include="WaitType.cs" />
-    <Compile Include="WebContext.cs" />
-    <Compile Include="WebRequestIdPatternConverter.cs" />
     <Compile Include="DirectoryCleaner.cs" />
     <Compile Include="FileSystemOperations.cs" />
-    <Compile Include="ExtendedPatternLayout.cs" />
     <Compile Include="FileInfo.cs" />
     <Compile Include="Interfaces\IFileSystemOperations.cs" />
     <Compile Include="SelfCleaningRollingFileAppender.cs" />
@@ -68,7 +58,6 @@
     <Compile Include="Interfaces\IDirectoryCleaner.cs" />
     <Compile Include="Interfaces\IFileSystem.cs" />
     <Compile Include="Interfaces\ISelfCleaningRollingFileAppender.cs" />
-    <Compile Include="LogExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TaskRunner.cs" />
     <Compile Include="UniversalDateTime.cs" />

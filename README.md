@@ -88,8 +88,20 @@ Notes:
 - It is not recommended to have multiple processes setup to clean the same logging directory with the same cleaning parameters.  If this is configured, all processes will attempt to clean the directory at about the same time.  The first one to start will get the work done, and the rest may silently continue when they attempt to delete files that no longer exist.
 
 
-## ILog Extension Methods
+## ILog Extension Methods defined in UGTS.Log4Net.Extensions.LogExtensions
 
-documentation in progress...
+- ```log.Debug/Info/Warn/Error/Fatal(Func<string> generator)```:  does lazy evaluation of the message to log.  This form is useful when it is prohibitively expensive to calculate the message to be logged unless it needs to be logged.  The following lines of code are equivalent:
+    ``` 
+    log.Debug(() => message);
+    
+    if (log.IsDebugEnabled) log.Debug(message);
+    ```
+    
+    Because calling this extension method results in a change in the call stack, special care is taken to ensure that if the call stack is logged, the caller's stack frame is used, rather than the stack frames within the LogExtensions module.
+    
+- ```log.WithLevel(level, message)```:  this is a convenience method to dynamically choose the level at which to log the message.
 
 
+## UGTS.Log4Net.Extensions.ExtendedPatternLayout
+
+This defines the %reqid pattern key.  This is intended for use an on ASP.NET web server where HttpContext.Current != null.  Each unique HTTP web request will be assigned an autoincrementing 64-bit integer.  %reqid will log this number, or 0 if the logging occurs on a thread outside of a web request.  This counter will reset to start at 1 whenever the website's application pool is restarted, and the number is not unique between processes.

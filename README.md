@@ -3,7 +3,7 @@ Provides the SelfCleaningRollingFileAppender log4net class, extensions methods, 
 
 This library requires log4net 2.0.8 or higher and .NET 4.5 or higher.  .NET Core/Standard libraries are not supported.
 
-If you have any issues with this library, would like to make requests, or submit or suggest improvements, please raise an issue or let me know.
+If you have any issues with this library, would like to make requests, or submit/suggest improvements, please raise an issue.
 
 
 ## SelfCleaningRollingFileAppender

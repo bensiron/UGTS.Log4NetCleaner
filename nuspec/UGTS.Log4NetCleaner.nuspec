@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>UGTS.Log4NetCleaner</id>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <title>UGTS.Log4NetCleaner</title>
     <authors>Ben Siron</authors>
     <owners>Ben Siron</owners>
@@ -13,14 +13,14 @@
     </description>
     <summary>log4net self-cleaning rolling file appender</summary>
     <copyright>Copyright 2017</copyright>
-    <tags>UGTS Log4Net Cleaner</tags>
+    <tags>UGTS log4net clean cleaner log logging delete</tags>
     <dependencies>
       <dependency id="log4net" version="2.0.8" />
     </dependencies>
   </metadata>
   <files>
-     <file src="..\source\ugts.Log4NetCleaner\bin\Debug\UGTS.Log4NetCleaner.dll" target="lib\net40\UGTS.Log4NetCleaner.dll" />
-     <file src="..\source\ugts.Log4NetCleaner\bin\Debug\UGTS.Log4NetCleaner.pdb" target="lib\net40\UGTS.Log4NetCleaner.pdb" />
-     <file src="..\source\ugts.Log4NetCleaner\bin\Debug\UGTS.Log4NetCleaner.xml" target="lib\net40\UGTS.Log4NetCleaner.xml" />
+     <file src="..\source\ugts.Log4NetCleaner\bin\Release\UGTS.Log4NetCleaner.dll" target="lib\net40\UGTS.Log4NetCleaner.dll" />
+     <file src="..\source\ugts.Log4NetCleaner\bin\Release\UGTS.Log4NetCleaner.pdb" target="lib\net40\UGTS.Log4NetCleaner.pdb" />
+     <file src="..\source\ugts.Log4NetCleaner\bin\Release\UGTS.Log4NetCleaner.xml" target="lib\net40\UGTS.Log4NetCleaner.xml" />
  </files>
 </package>

@@ -69,7 +69,7 @@
     <Compile Include="ContextTests.cs" />
     <Compile Include="DirectoryCleanerTests.cs" />
     <Compile Include="FileSystemOperationsTests.cs" />
-    <Compile Include="SelfCleanerTests.cs" />
+    <Compile Include="LogCleanerTests.cs" />
     <Compile Include="SelfCleaningRollingFileAppenderTests.cs" />
     <Compile Include="LogExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

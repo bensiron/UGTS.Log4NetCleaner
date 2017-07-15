@@ -9,7 +9,7 @@ using UGTS.Testing;
 namespace UGTS.Log4Net.Extensions.UnitTest
 {
     [TestFixture]
-    internal class SelfCleanerTests : TestBase<LogCleaner, ILogCleaner>
+    internal class LogCleanerTests : TestBase<LogCleaner, ILogCleaner>
     {
         protected override LogCleaner CreateTestObject()
         {
@@ -24,7 +24,7 @@ namespace UGTS.Log4Net.Extensions.UnitTest
             return testObject;
         }
 
-        internal class MaximumFileAgeDays : SelfCleanerTests
+        internal class MaximumFileAgeDays : LogCleanerTests
         {
             [TestCase("1", 1.0)]
             [TestCase("89.33", 89.33)]
@@ -37,7 +37,7 @@ namespace UGTS.Log4Net.Extensions.UnitTest
             }
         }
 
-        internal class MaximumDirectorySize : SelfCleanerTests
+        internal class MaximumDirectorySize : LogCleanerTests
         {
             [TestCase("1", 1L)]
             [TestCase("1KB", 1024L)]
@@ -54,12 +54,13 @@ namespace UGTS.Log4Net.Extensions.UnitTest
             }
         }
 
-        internal class TryCleanup : SelfCleanerTests
+        internal class TryCleanup : LogCleanerTests
         {
             [Test, Combinatorial]
             public void Cleans_If_IsDue_And_Either_MaxAgeDays_Or_MaxSizeBytes_Specified(
                 [Values(true, false)] bool hasMaxAge,
                 [Values(true, false)] bool hasMaxBytes,
+                [Values(null, "", " ", "a")] string fileExtension,
                 [Values(true, false)] bool isDue)
             {
                 var basePath = RandomGenerator.String();
@@ -69,13 +70,14 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 if (hasMaxBytes) TestObject.MaxDirectorySize = 1;
                 TestObject.LastCleaning = lastRun;
                 TestObject.BasePath = basePath;
+                TestObject.FileExtension = fileExtension;
                 Mock<IDirectoryCleaner>().Setup(x => x.UpdateLastCleaningTime(basePath)).Returns(updatedTime);
                 Mock<ILogCleaner>().Setup(x => x.IsDueForCleaning(It.IsAny<DateTime>()))
                     .Returns(isDue);
 
                 TestInterface.TryCleanup();
 
-                if ((hasMaxAge || hasMaxBytes) && isDue)
+                if ((hasMaxAge || hasMaxBytes) && isDue && !string.IsNullOrWhiteSpace(fileExtension))
                 {
                     Mock<ILogCleaner>().Verify(x => x.Cleanup(), Times.Once);
                     Assert.That(TestObject.LastCleaning, Is.EqualTo(updatedTime));
@@ -88,7 +90,7 @@ namespace UGTS.Log4Net.Extensions.UnitTest
             }
         }
 
-        internal class IsDueForCleaning : SelfCleanerTests
+        internal class IsDueForCleaning : LogCleanerTests
         {
             [TestCase(-1, true)]
             [TestCase(1, false)]
@@ -125,7 +127,7 @@ namespace UGTS.Log4Net.Extensions.UnitTest
             }
         }
 
-        internal class Cleanup : SelfCleanerTests
+        internal class Cleanup : LogCleanerTests
         {
             private Action _action;
             private Task _task;

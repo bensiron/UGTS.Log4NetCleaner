@@ -64,10 +64,8 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 Assert.False(actualPredicate("a." + RandomGenerator.String()));
             }
 
-            [TestCase("")]
-            [TestCase("*")]
-            [TestCase(null)]
-            public void Finds_File_Info_Matching_Anything_Non_Blank_When_No_Extension_Specified(string extension)
+            [Test]
+            public void Finds_File_Info_Matching_Anything_Star_Extension_Specified()
             {
                 Func<string, bool> actualPredicate = null;
                 var path = RandomGenerator.String();
@@ -75,7 +73,7 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                     .Returns(new Dictionary<string, FileInfo>())
                     .Callback<string, Func<string, bool>>((_, predicate) => actualPredicate = predicate);
 
-                TestObject.Clean(path, extension, DateTime.MaxValue, null);
+                TestObject.Clean(path, "*", DateTime.MaxValue, null);
 
                 Mock<IFileSystemOperations>().Verify(x => x.FindFileInfo(path, It.IsAny<Func<string, bool>>()));
                 Mock<IFileSystemOperations>().Verify(x => x.FindFileInfo(It.IsAny<string>(), It.IsAny<Func<string, bool>>()), Times.Once);
@@ -88,6 +86,31 @@ namespace UGTS.Log4Net.Extensions.UnitTest
                 Assert.False(actualPredicate("a\\b\\" + DirectoryCleaner.LastCleaningCheckFileName));
                 Assert.False(actualPredicate(DirectoryCleaner.LastCleaningCheckFileName.ToUpper()));
                 Assert.False(actualPredicate(null));
+            }
+
+            [TestCase(null)]
+            [TestCase("")]
+            [TestCase(" ")]
+            public void Never_Matches_If_FileExtension_Blank(string fileExtension)
+            {
+                Func<string, bool> actualPredicate = null;
+                var path = RandomGenerator.String();
+                Mock<IFileSystemOperations>().Setup(x => x.FindFileInfo(path, It.IsAny<Func<string, bool>>()))
+                    .Returns(new Dictionary<string, FileInfo>())
+                    .Callback<string, Func<string, bool>>((_, predicate) => actualPredicate = predicate);
+
+                TestObject.Clean(path, fileExtension, DateTime.MaxValue, null);
+
+                Mock<IFileSystemOperations>().Verify(x => x.FindFileInfo(path, It.IsAny<Func<string, bool>>()));
+                Mock<IFileSystemOperations>().Verify(x => x.FindFileInfo(It.IsAny<string>(), It.IsAny<Func<string, bool>>()), Times.Once);
+
+                Assert.False(actualPredicate("a."));
+                Assert.False(actualPredicate("a"));
+                Assert.False(actualPredicate("a\\b"));
+                Assert.False(actualPredicate(".a"));
+                Assert.False(actualPredicate(null));
+                Assert.False(actualPredicate(" "));
+                Assert.False(actualPredicate(""));
             }
 
             [Test]

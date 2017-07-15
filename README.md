@@ -43,12 +43,13 @@ The properties defined under the cleaner tag include:
         If this value is omitted, it will be inferred from the File property.
         Sometimes inference does not work if the File is not a directory but also contains part of the file name.
         Use care when setting this property and the FileExtension.  The appender will clean any directory you give it, and with a FileExtension of * this can 
-        result in non-log files being removed.
+        result in non-log files being removed in the specified directory and subdirectories.
 
 - fileExtension:
         Use this to restrict which files by file extension will be cleaned up.
-        If this property is omitted, the file extension will be inferred from the extension of the log files created.  Usually inference works well enough so that you need not specify this property.
-        You can explicitly set this property to * or blank to clean all files whatever the file extension or lack thereof.
+        If this property is omitted, the file extension will be inferred from the extension of the log files created.  If the file extension cannot be inferred,
+        then for safety, no cleaning will be performed.  Usually inference works well enough so that you need not specify this property.
+        You can explicitly set this property to * to clean all files whatever the file extension or lack thereof.  Use * at your own risk.
         The lastcleaning.check file is never removed regardless of the value of this property.
         This extension can include or omit a leading dot, it will not affect the results, and the extension is not case sensititve.
         Rolling backup files ending in .ext.N will also be removed along with files ending in .ext
@@ -81,7 +82,7 @@ The properties defined under the cleaner tag include:
 
 Notes: 
 
-- You will probably not need to explicitly define the basePath and fileExtension parameters unless the file property on the rolling appender includes part of the filename and not just the directory name, or the directory name defined by the file property has pattern strings within it.
+- If your configuration is setup to log to files without a file extension, then for safety, the cleaner will NOT attempt to infer a file extension (in order to prevent the accidental deletion of files other than log files).
 
 - You should not need to define the waitType property to Never unless the application does logging on a thread where occasional delays will be noticeable when the period check for old files is performed.  The default waitType is set to Always to handle the case of background processes where logging delays are not critical.  If the waitType is set to Never, and the process exits while in the middle of cleaning up the log directory, then cleaning will be retried (also with a wait type of Never) the next time the process is started.
 

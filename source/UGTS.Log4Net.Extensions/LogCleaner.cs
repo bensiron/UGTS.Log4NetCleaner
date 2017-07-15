@@ -81,10 +81,11 @@ namespace UGTS.Log4Net.Extensions
         /// </summary>
         /// <remarks>
         /// <para>
-        /// This can be * or blank to clean all files whatever the file extension or lack thereof.
+        /// This can be explicitly set to * to clean all files whatever the file extension or lack thereof.
         /// The lastcleaning.check file is never removed regardless of this property.
         /// If this property is omitted, the file extension will be inferred from the 
-        /// extension of the log files created.  Usually inference works well enough so that you need not specify this property,
+        /// extension of the log files created.  If the file extension cannot be inferred, then cleaning will not be performed.  
+        /// Usually inference works well enough so that you need not specify this property,
         /// but if your log file naming convention is complex enough, you may need to explicitly set this property.
         /// This extension can include or omit a leading dot, it will not affect the results,
         /// and the extension is not case sensititve.
@@ -188,6 +189,7 @@ namespace UGTS.Log4Net.Extensions
         public void TryCleanup()
         {
             if (!(MaxFileAgeDays.HasValue || MaxDirectorySize.HasValue)) return;
+            if (string.IsNullOrWhiteSpace(FileExtension)) return;
 
             var now = _dateTimeProvider.Now;
             if (!_self.IsDueForCleaning(now)) return;

@@ -3,6 +3,8 @@ Provides the SelfCleaningRollingFileAppender log4net class, extensions methods, 
 
 This library requires log4net 2.0.8 or higher and .NET 4.5 or higher.  .NET Core/Standard libraries are not supported.
 
+If you have any issues with this library, would like to make requests, or submit or suggest improvements, please raise an issue or let me know.
+
 The SelfCleaningRollingFileAppender is a RollingFileAppender which periodically removes log files from the output log directory more than a specified number of days in age, or removes files when the total size of the log directory exceeds a threshold.  Here is an example config section which shows how this appender can be configured:
 
 ```xml
@@ -70,10 +72,18 @@ The properties defined under the cleaner tag include:
         
 - waitType:
         Gets or sets the type of waiting to do when cleaning the log directory.
-        This can be either: Never or Always
+        This can be either: Never or Always.
         If the value is Always (default), then log directory cleaning will run on the same thread as logging, and will block until cleaning is complete.  This is recommended for batch and other background jobs.
         If the value is Never, then cleaning is performed asynchronously in the background on a different thread.  This is recommended for web and other processes which run continuously.
 
-  
+Notes: 
+
+- You will probably not need to explicitly define the basePath and fileExtension parameters unless the file property on the rolling appender includes part of the filename and not just the directory name, or the directory name defined by the file property has pattern strings within it.
+
+- You should not need to define the waitType property to Never unless the application does logging on a thread where occasional delays will be noticeable when the period check for old files is performed.  The default waitType is set to Always to handle the case of background processes where logging delays are not critical.  If the waitType is set to Never, and the process exits while in the middle of cleaning up the log directory, then cleaning will be retried (also with a wait type of Never) the next time the process is started.
+
+- It is not recommended to have multiple processes setup to clean the same logging directory with the same cleaning parameters.  If this is configured, all processes will attempt to clean the directory at about the same time.  The first one to start will get the work done, and the rest may silently continue when they attempt to delete files that no longer exist.
+
+
 
 

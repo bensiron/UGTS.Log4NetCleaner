@@ -1,4 +1,4 @@
-# UGTS.Log4Net.Extensions
+# UGTS.Log4NetCleaner
 Provides the SelfCleaningRollingFileAppender log4net class.
 
 This requires log4net 2.0.8 or higher and .NET 4.5 or higher.  .NET Core/Standard libraries are not supported.
@@ -15,11 +15,11 @@ The SelfCleaningRollingFileAppender is a RollingFileAppender which periodically 
 
 ```xml
   <log4net debug="true">
-    <appender name="LogToFile" type="UGTS.Log4Net.Extensions.SelfCleaningRollingFileAppender, UGTS.Log4Net.Extensions">
+    <appender name="LogToFile" type="UGTS.Log4NetCleaner.SelfCleaningRollingFileAppender, UGTS.Log4NetCleaner">
       <file type="log4net.Util.PatternString" value="%env{LogPath}\\MyApp\\" />
       <DatePattern value="yyyyMM\\dd-HH'.log'" />
       <appendToFile value="true" />
-      <cleaner type="UGTS.Log4Net.Extensions.LogCleaner">
+      <cleaner type="UGTS.Log4NetCleaner.LogCleaner">
         <maximumFileAgeDays value="90" />
         <maximumDirectorySize value="100MB" />
       </cleaner>

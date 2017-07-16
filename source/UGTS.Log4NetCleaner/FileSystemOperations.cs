@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net.Util;
 using UGTS.Log4NetCleaner.Interfaces;
 #pragma warning disable 1591
 
@@ -33,7 +34,10 @@ namespace UGTS.Log4NetCleaner
             {
                 _fs.DeleteFile(path);
             }
-            catch (Exception) { /* ignored */ }
+            catch (Exception e)
+            {
+                LogLog.Error(typeof(FileSystemOperations), $"Could not delete file at '{path}", e);
+            }
         }
 
         public void DeleteEmptyDirectories(string path)
@@ -48,8 +52,9 @@ namespace UGTS.Log4NetCleaner
                 _fs.CreateEmptyFile(path);
                 return _fs.GetFileInfo(path).LastWriteTimeUtc;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                LogLog.Error(typeof(FileSystemOperations), $"Could not create empty file at '{path}", e);
                 return null;
             }
         }
@@ -60,8 +65,9 @@ namespace UGTS.Log4NetCleaner
             {
                 return _fs.GetFileInfo(path);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                LogLog.Error(typeof(FileSystemOperations), $"Could not get file info for '{path}", e);
                 return null;
             }
         }
@@ -94,8 +100,9 @@ namespace UGTS.Log4NetCleaner
                 _fs.DeleteDirectory(path);
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                LogLog.Error(typeof(FileSystemOperations), $"Could not delete directory '{path}", e);
                 return false;
             }
         }

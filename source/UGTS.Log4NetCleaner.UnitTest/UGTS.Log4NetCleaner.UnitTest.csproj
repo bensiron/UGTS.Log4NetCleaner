@@ -50,7 +50,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="UGTS.Testing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\UGTS.Testing.1.0.3\lib\net40\UGTS.Testing.dll</HintPath>
+      <HintPath>..\..\packages\UGTS.Testing.1.0.4\lib\net40\UGTS.Testing.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

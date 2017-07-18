@@ -166,7 +166,7 @@ namespace UGTS.Log4NetCleaner
         /// <para>
         /// This period defaults to 480 minutes if not specified.  Cleaning is performed at the first logging call where it has
         /// been at least this many minutes since the last cleaning.  The date of the last cleaning is stored between process runs
-        /// by using the last modified date (UTC) of the lastcleaning.check file which is placed at the root of the log directory.
+        /// by using the last modified date (UTC) of the lastcleaning.check file which is placed in the BasePath directory.
         /// </para>
         /// </remarks>
         public double PeriodMinutes { get; set; } = DefaultCleaningPeriodMinutes;

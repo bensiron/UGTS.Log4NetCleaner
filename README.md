@@ -75,7 +75,7 @@ The properties defined under the cleaner tag include:
         Sets the decimal number of minutes to wait between directory cleaning checks.
         This period defaults to 480 minutes if not specified.  Cleaning is performed at the first logging call where it has
         been at least this many minutes since the last cleaning.  The date of the last cleaning is stored between process runs
-        by using the last modified date (UTC) of the lastcleaning.check file which is placed at the root of the log directory.
+        by using the last modified date (UTC) of the lastcleaning.check file which is placed in the basePath directory.
         
 - waitType:
         Sets the type of waiting to do when cleaning the log directory.

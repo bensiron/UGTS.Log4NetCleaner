@@ -22,5 +22,6 @@ namespace UGTS.Log4NetCleaner.Interfaces
         void InferFileExtension(string path);
         bool IsDueForCleaning(DateTime now);
         void TryCleanup();
+        void ValidateConfiguration();
     }
 }

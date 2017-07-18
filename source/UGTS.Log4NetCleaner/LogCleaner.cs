@@ -227,10 +227,21 @@ namespace UGTS.Log4NetCleaner
         public void InferFileExtension(string path)
         {
             FileExtension = DirectoryCleaner.GetFileExtension(path);
+        }
+
+        /// <summary>
+        /// sends warnings by internal logging if the cleaner is misconfigured
+        /// </summary>
+        public void ValidateConfiguration()
+        {
+            if (MaxFileAgeDays == null && MaxDirectorySize == null)
+            {
+                LogLog.Warn(typeof(LogCleaner), "Log cleaning using has been disabled: no MaximumFileAgeDays or MaximumDirectorySize was specified.");
+            }
+
             if (string.IsNullOrWhiteSpace(FileExtension))
             {
-                LogLog.Warn(typeof (LogCleaner),
-                    $"Could not infer FileExtension property for log file cleaning - no file extension was specified, and the log file '{path}' does not have a file extension.");
+                LogLog.Warn(typeof(LogCleaner), "Could not infer FileExtension property for log file cleaning - no file extension was specified, and no file extension could be inferred from a log file path.");
             }
         }
     }

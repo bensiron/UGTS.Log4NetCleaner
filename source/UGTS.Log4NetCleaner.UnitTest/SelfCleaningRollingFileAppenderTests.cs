@@ -72,6 +72,17 @@ namespace UGTS.Log4NetCleaner.UnitTest
 
                 Mock<ILogCleaner>().Verify(x => x.InferFileExtension(It.IsAny<string>()), Times.Never);
             }
+
+            [Test]
+            public void Validates_Configuration_After_Configuring()
+            {
+                Mock<ILogCleaner>().Setup(x => x.ValidateConfiguration())
+                    .Callback(() => Mock<ILogCleaner>().Verify(x => x.InferFileExtension(It.IsAny<string>()), Times.Once));
+
+                TestObject.ActivateOptions();
+
+                Mock<ILogCleaner>().Verify(x => x.ValidateConfiguration(), Times.Once);
+            }
         }
 
         internal class Append : SelfCleaningRollingFileAppenderTests

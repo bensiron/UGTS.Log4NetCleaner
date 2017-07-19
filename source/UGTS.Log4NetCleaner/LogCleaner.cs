@@ -14,8 +14,6 @@ namespace UGTS.Log4NetCleaner
     {
         private const double DefaultCleaningPeriodMinutes = 480.0;
 
-        private long? _maximumDirectorySizeBytes;
-        private double? _maximumFileAgeDays;
         private readonly RollingFileAppender.IDateTime _dateTimeProvider;
 
         private readonly ILogCleaner _self; // for unit testing private calls by the instance to itself
@@ -107,22 +105,18 @@ namespace UGTS.Log4NetCleaner
         /// </remarks>
         public string MaximumFileAgeDays
         {
-            get { return _maximumFileAgeDays?.ToString() ?? ""; }
+            get { return MaxFileAgeDays?.ToString() ?? ""; }
             set
             {
                 double days;
-                _maximumFileAgeDays = double.TryParse(value, out days) ? (double?)days : null;
+                MaxFileAgeDays = double.TryParse(value, out days) ? (double?)days : null;
             }
         }
 
         /// <summary>
         /// The numeric equivalent of MaximumFileAgeDays
         /// </summary>
-        public double? MaxFileAgeDays
-        {
-            get { return _maximumFileAgeDays; }
-            set { _maximumFileAgeDays = value; }
-        }
+        public double? MaxFileAgeDays { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum allowed size of the log directory in bytes for all log files found.
@@ -140,12 +134,12 @@ namespace UGTS.Log4NetCleaner
         {
             get
             {
-                return _maximumDirectorySizeBytes?.ToString(NumberFormatInfo.InvariantInfo) ?? "";
+                return MaxDirectorySize?.ToString(NumberFormatInfo.InvariantInfo) ?? "";
             }
             set
             {
-                _maximumDirectorySizeBytes = OptionConverter.ToFileSize(value, -1);
-                if (_maximumDirectorySizeBytes <= 0) _maximumDirectorySizeBytes = null;
+                MaxDirectorySize = OptionConverter.ToFileSize(value, -1);
+                if (MaxDirectorySize <= 0) MaxDirectorySize = null;
             }
         }
 
@@ -153,11 +147,7 @@ namespace UGTS.Log4NetCleaner
         /// The numeric equivalent of the string property MaximumDirectorySize
         /// </summary>
         [UsedImplicitly]
-        public long? MaxDirectorySize
-        {
-            get { return _maximumDirectorySizeBytes; }
-            set { _maximumDirectorySizeBytes = value; }
-        }
+        public long? MaxDirectorySize { get; set; }
 
         /// <summary>
         /// Gets or sets the decimal number of minutes to wait between directory cleaning checks.

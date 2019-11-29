@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using log4net;
@@ -28,7 +29,7 @@ namespace UGTS.Log4NetCleaner.FunctionalTest
             DeleteFiles();
             Directory.CreateDirectory(_testLogPath);
 
-            _logger = ((Hierarchy)LogManager.GetRepository()).Root;
+            _logger = ((Hierarchy)LogManager.GetRepository(Assembly.GetEntryAssembly())).Root;
             _logger.Level = Level.All;
             _layout = new PatternLayout();
             _layout.ActivateOptions();
@@ -345,7 +346,7 @@ namespace UGTS.Log4NetCleaner.FunctionalTest
 
         private static void ResetLogging()
         {
-            var repo = LogManager.GetRepository();
+            var repo = LogManager.GetRepository(Assembly.GetEntryAssembly());
             repo.ResetConfiguration();
             repo.Shutdown();
             ((Hierarchy)repo).Clear();

@@ -14,5 +14,9 @@ if (!$password) { $password = Read-Host 'nuget server password' }
 
 
 foreach($file in $packages) {
-    & nuget push $file $password -source http://ugtsdev/nuget/api/v2/package
+	if (!($file -match '\.nupkg$')) {
+		throw "package must be the full file name of the nupkg file"
+	}
+
+    & nuget push $file $password -source http://home.ugts.org/nuget/api/v2/package
 }

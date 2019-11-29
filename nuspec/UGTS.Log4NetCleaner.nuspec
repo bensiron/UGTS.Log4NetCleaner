@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>UGTS.Log4NetCleaner</id>
-    <version>1.0.1</version>
+    <version>2.0.0</version>
     <title>UGTS.Log4NetCleaner</title>
     <authors>Ben Siron</authors>
     <owners>Ben Siron</owners>
@@ -12,14 +12,13 @@
     <description>Supplies the log4net log directory cleaner 'SelfCleaningRollingFileAppender' which periodically checks for old log files and deletes them automatically from the output log directory.
     </description>
     <summary>log4net self-cleaning rolling file appender</summary>
-    <copyright>Copyright 2017</copyright>
+    <copyright>Copyright 2019</copyright>
     <tags>UGTS log4net clean cleaner log logging delete</tags>
     <dependencies>
       <dependency id="log4net" version="2.0.8" />
     </dependencies>
   </metadata>
   <files>
-     <file src="..\source\ugts.Log4NetCleaner\bin\Release\UGTS.Log4NetCleaner.dll" target="lib\net40\UGTS.Log4NetCleaner.dll" />
-     <file src="..\source\ugts.Log4NetCleaner\bin\Release\UGTS.Log4NetCleaner.xml" target="lib\net40\UGTS.Log4NetCleaner.xml" />
+     <file src="..\source\ugts.Log4NetCleaner\bin\Release\netstandard2.0\UGTS.Log4NetCleaner.dll" target="lib\net40\UGTS.Log4NetCleaner.dll" />
  </files>
 </package>

@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UGTS.Log4NetCleaner", "source\UGTS.Log4NetCleaner\UGTS.Log4NetCleaner.csproj", "{9A3B0643-8F9A-456E-A661-B2BB0337A20B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UGTS.Log4NetCleaner", "source\UGTS.Log4NetCleaner\UGTS.Log4NetCleaner.csproj", "{9964C600-8D39-4027-8BBE-214227FC49CD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UGTS.Log4NetCleaner.UnitTest", "source\UGTS.Log4NetCleaner.UnitTest\UGTS.Log4NetCleaner.UnitTest.csproj", "{B8164A23-8F5E-4D3F-A0D1-2C6E90BA30DC}"
 EndProject
@@ -41,8 +41,19 @@ Global
 		{645872DA-253A-401C-A234-A743C8C9D860}.Release|Any CPU.Build.0 = Release|Any CPU
 		{645872DA-253A-401C-A234-A743C8C9D860}.Release|x86.ActiveCfg = Release|Any CPU
 		{645872DA-253A-401C-A234-A743C8C9D860}.Release|x86.Build.0 = Release|Any CPU
+		{9964C600-8D39-4027-8BBE-214227FC49CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9964C600-8D39-4027-8BBE-214227FC49CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9964C600-8D39-4027-8BBE-214227FC49CD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9964C600-8D39-4027-8BBE-214227FC49CD}.Debug|x86.Build.0 = Debug|Any CPU
+		{9964C600-8D39-4027-8BBE-214227FC49CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9964C600-8D39-4027-8BBE-214227FC49CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9964C600-8D39-4027-8BBE-214227FC49CD}.Release|x86.ActiveCfg = Release|Any CPU
+		{9964C600-8D39-4027-8BBE-214227FC49CD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DB4A2C12-57D3-4CFD-8035-8AA3101CE0F4}
 	EndGlobalSection
 EndGlobal

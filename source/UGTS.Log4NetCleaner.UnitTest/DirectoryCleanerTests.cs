@@ -9,13 +9,9 @@ using UGTS.Testing;
 
 namespace UGTS.Log4NetCleaner.UnitTest
 {
-    internal class DirectoryCleanerTests : TestBase<DirectoryCleaner, IDirectoryCleaner>
+    [TestFixture]
+    public class DirectoryCleanerTests : TestBase<DirectoryCleaner>
     {
-        protected override DirectoryCleaner CreateTestObject()
-        {
-            return new DirectoryCleaner(DefineMock<IFileSystemOperations>().Object, DefineMock<RollingFileAppender.IDateTime>().Object);
-        }
-
         internal class Clean : DirectoryCleanerTests
         {
             [SetUp]

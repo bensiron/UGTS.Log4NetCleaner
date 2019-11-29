@@ -7,17 +7,13 @@ using UGTS.Testing;
 namespace UGTS.Log4NetCleaner.UnitTest
 {
     [TestFixture]
-    internal class SelfCleaningRollingFileAppenderTests : TestBase<SelfCleaningRollingFileAppender, ISelfCleaningRollingFileAppender>
+    internal class SelfCleaningRollingFileAppenderTests : TestBase<SelfCleaningRollingFileAppender>
     {
-        protected override SelfCleaningRollingFileAppender CreateTestObject()
+        [SetUp]
+        protected void SetupClass()
         {
-            var testObject = new SelfCleaningRollingFileAppender
-            {
-                Cleaner = DefineMock<ILogCleaner>().Object,
-            };
-
-            testObject.SetPrivateFieldValue("_self", DefineMock<ISelfCleaningRollingFileAppender>().Object); // ugly hack to test calling other methods on the same object
-            return testObject;
+            TestObject.Cleaner = Mock<ILogCleaner>().Object;
+            TestObject.SetPrivateFieldValue("_self", Mock<ISelfCleaningRollingFileAppender>().Object); // ugly hack to test calling other methods on the same object
         }
 
         internal class ActivateOptions : SelfCleaningRollingFileAppenderTests

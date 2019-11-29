@@ -6,15 +6,15 @@ using UGTS.Log4NetCleaner.Interfaces;
 
 namespace UGTS.Log4NetCleaner.UnitTest
 {
-    internal class FileSystemOperationsTests : TestBase<FileSystemOperations, IFileSystemOperations>
+    [TestFixture]
+    internal class FileSystemOperationsTests : TestBase<FileSystemOperations>
     {
-        private Mock<IFileSystem> _fs;
+        protected Mock<IFileSystem> _fs;
 
-        protected override FileSystemOperations CreateTestObject()
+        [SetUp]
+        protected void Setup()
         {
-            var t = new FileSystemOperations(DefineMock<IFileSystem>().Object);
             _fs = Mock<IFileSystem>();
-            return t;
         }
 
         internal class ExistsDirectory : FileSystemOperationsTests
@@ -71,7 +71,7 @@ namespace UGTS.Log4NetCleaner.UnitTest
             }
         }
 
-        internal class CreatEmptyFile : FileSystemOperationsTests
+        internal class CreateEmptyFile : FileSystemOperationsTests
         {
             [Test]
             public void Creates_Empty_File_And_Then_Returns_LastWriteTimeUtc()

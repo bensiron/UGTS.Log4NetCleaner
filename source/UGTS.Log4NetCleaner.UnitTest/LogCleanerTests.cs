@@ -9,19 +9,15 @@ using UGTS.Testing;
 namespace UGTS.Log4NetCleaner.UnitTest
 {
     [TestFixture]
-    internal class LogCleanerTests : TestBase<LogCleaner, ILogCleaner>
+    internal class LogCleanerTests : TestBase<LogCleaner>
     {
-        protected override LogCleaner CreateTestObject()
+        [SetUp]
+        protected void SetupLogCleaner()
         {
-            var testObject = new LogCleaner
-            {
-                DirectoryCleaner = DefineMock<IDirectoryCleaner>().Object,
-                TaskRunner = DefineMock<ITaskRunner>().Object
-            };
-
-            testObject.SetPrivateFieldValue("_dateTimeProvider", DefineMock<RollingFileAppender.IDateTime>().Object);
-            testObject.SetPrivateFieldValue("_self", DefineMock<ILogCleaner>().Object); // ugly hack to test calling other methods on the same object
-            return testObject;
+            TestObject.DirectoryCleaner = Mock<IDirectoryCleaner>().Object;
+            TestObject.TaskRunner = Mock<ITaskRunner>().Object;
+            TestObject.SetPrivateFieldValue("_dateTimeProvider", Mock<RollingFileAppender.IDateTime>().Object);
+            TestObject.SetPrivateFieldValue("_self", Mock<ILogCleaner>().Object); // ugly hack to test calling other methods on the same object
         }
 
         internal class MaximumFileAgeDays : LogCleanerTests
@@ -75,7 +71,7 @@ namespace UGTS.Log4NetCleaner.UnitTest
                 Mock<ILogCleaner>().Setup(x => x.IsDueForCleaning(It.IsAny<DateTime>()))
                     .Returns(isDue);
 
-                TestInterface.TryCleanup();
+                TestObject.TryCleanup();
 
                 if ((hasMaxAge || hasMaxBytes) && isDue && !string.IsNullOrWhiteSpace(fileExtension))
                 {
@@ -105,7 +101,7 @@ namespace UGTS.Log4NetCleaner.UnitTest
                 TestObject.BasePath = basePath;
                 Mock<IDirectoryCleaner>().Setup(x => x.GetLastCleaningTime(basePath)).Returns(updatedTime);
 
-                var actual = TestInterface.IsDueForCleaning(now);
+                var actual = TestObject.IsDueForCleaning(now);
 
                 Mock<IDirectoryCleaner>().Verify(x => x.GetLastCleaningTime(It.IsAny<string>()), Times.Once);
                 Assert.That(TestObject.LastCleaning, Is.EqualTo(updatedTime));
@@ -121,7 +117,7 @@ namespace UGTS.Log4NetCleaner.UnitTest
                 TestObject.PeriodMinutes = period;
                 TestObject.LastCleaning = now.AddMinutes(-period).AddSeconds(secondsDelta);
 
-                var actual = TestInterface.IsDueForCleaning(now);
+                var actual = TestObject.IsDueForCleaning(now);
 
                 Assert.That(actual, Is.EqualTo(expectedResult));
             }
@@ -146,7 +142,7 @@ namespace UGTS.Log4NetCleaner.UnitTest
             {
                 TestObject.WaitType = waitType;
 
-                var actual = TestInterface.Cleanup();
+                var actual = TestObject.Cleanup();
 
                 Assert.That(actual, Is.EqualTo(_task));
                 Mock<ITaskRunner>().Verify(x => x.Run(It.IsAny<Action>(), waitType), Times.Once);
@@ -174,7 +170,7 @@ namespace UGTS.Log4NetCleaner.UnitTest
                 var expectedCutoff = hasMaxAge ? (DateTime?)now.AddDays(-maxAge) : null;
                 Mock<RollingFileAppender.IDateTime>().Setup(x => x.Now).Returns(now);
 
-                TestInterface.Cleanup();
+                TestObject.Cleanup();
                 _action();
 
                 Mock<IDirectoryCleaner>().Verify(x => x.Clean(baseFile, extension, expectedCutoff, maxBytes), Times.Once);

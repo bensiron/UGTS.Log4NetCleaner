@@ -5,7 +5,7 @@
     <RootNamespace>UGTS.Log4NetCleaner</RootNamespace>
     <Company>UGTS</Company>
     <Authors>Ben Siron</Authors>
-    <Version>2.0.0</Version>
+    <Version>2.0.1</Version>
     <Description>Supplies the log4net log directory cleaner 'SelfCleaningRollingFileAppender' which periodically checks for old log files and deletes them automatically from the output log directory.  Now compatible with .net standard 2.0</Description>
     <Copyright>Copyright © 2019</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

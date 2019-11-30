@@ -1,7 +1,7 @@
 # UGTS.Log4NetCleaner
 Provides the SelfCleaningRollingFileAppender log4net class.
 
-This requires log4net 2.0.8 or higher and any target framework compatible with .NET Standard 1.3 or higher (this means .NET Framework 4.6 or higher, or .NET Core 1.0 or higher, see https://github.com/dotnet/standard/blob/master/docs/versions.md).
+This requires log4net 2.0.8 or higher and any target framework [compatible with .NET Standard 1.3](https://github.com/dotnet/standard/blob/master/docs/versions.md).
 
 This is released under the MIT license.  Full details at /license/license.txt.
 
@@ -11,6 +11,7 @@ If you have any issues with this appender, would like to make requests, or submi
 ## SelfCleaningRollingFileAppender
 
 The SelfCleaningRollingFileAppender is a RollingFileAppender which periodically removes log files from the output log directory more than a specified number of days in age, or removes files when the total size of the log directory exceeds a threshold.  Here is an example config section which shows how this appender can be configured.
+
 Note that it is important that both the appender type and cleaner type value be fully qualified names including the assembly name (as you see below), or you will get a type error.  The fully qualified name is required by the .NET Standard 1.3 build of log4net:
 
 ```xml
@@ -101,7 +102,7 @@ The properties defined under the cleaner tag include:
 
 ## Log4Net Notes:
 
-- If you are using Log4Net with .NET Core, the way in which you initialize the Log4Net Repository has changed.  You can no longer simply do this:
+If you are using Log4Net with .NET Core, the way in which you initialize the Log4Net Repository has changed.  You can no longer simply do this:
 
 ```
     XmlConfigurator.Configure();

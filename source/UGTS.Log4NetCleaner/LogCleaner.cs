@@ -108,8 +108,7 @@ namespace UGTS.Log4NetCleaner
             get { return MaxFileAgeDays?.ToString() ?? ""; }
             set
             {
-                double days;
-                MaxFileAgeDays = double.TryParse(value, out days) ? (double?)days : null;
+                MaxFileAgeDays = double.TryParse(value, out double days) ? (double?)days : null;
             }
         }
 

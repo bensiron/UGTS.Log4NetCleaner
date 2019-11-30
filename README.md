@@ -1,25 +1,31 @@
 # UGTS.Log4NetCleaner
 Provides the SelfCleaningRollingFileAppender log4net class.
 
-This requires log4net 2.0.8 or higher and .NET 4.5 or higher.  .NET Core/Standard libraries are not supported.
+This requires log4net 2.0.8 or higher and any target framework compatible with .NET Standard 1.3 or higher (this means .NET Framework 4.6 or higher, or .NET Core 1.0 or higher, see https://github.com/dotnet/standard/blob/master/docs/versions.md).
 
 This is released under the MIT license.  Full details at /license/license.txt.
 
-If you have any issues with this appender, would like to make requests, or submit/suggest improvements, please raise an issue.  The library has served my needs but I am holding
-off on upgrading it further until I see some interest from others about what it needs most from here.
+If you have any issues with this appender, would like to make requests, or submit/suggest improvements, please raise an issue.
 
 
 ## SelfCleaningRollingFileAppender
 
-The SelfCleaningRollingFileAppender is a RollingFileAppender which periodically removes log files from the output log directory more than a specified number of days in age, or removes files when the total size of the log directory exceeds a threshold.  Here is an example config section which shows how this appender can be configured:
+The SelfCleaningRollingFileAppender is a RollingFileAppender which periodically removes log files from the output log directory more than a specified number of days in age, or removes files when the total size of the log directory exceeds a threshold.  Here is an example config section which shows how this appender can be configured.
+Note that it is important that both the appender type and cleaner type value be fully qualified names including the assembly name (as you see below), or you will get a type error.  The fully qualified name is required by the .NET Standard 1.3 build of log4net:
 
 ```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <configSections>
+    <section name="log4net" type="log4net.Config.Log4NetConfigurationSectionHandler, log4net"/>
+  </configSections>
+
   <log4net debug="true">
     <appender name="LogToFile" type="UGTS.Log4NetCleaner.SelfCleaningRollingFileAppender, UGTS.Log4NetCleaner">
       <file type="log4net.Util.PatternString" value="%env{LogPath}\\MyApp\\" />
       <DatePattern value="yyyyMM\\dd-HH'.log'" />
       <appendToFile value="true" />
-      <cleaner type="UGTS.Log4NetCleaner.LogCleaner">
+      <cleaner type="UGTS.Log4NetCleaner.LogCleaner, UGTS.Log4NetCleaner">
         <maximumFileAgeDays value="90" />
         <maximumDirectorySize value="100MB" />
       </cleaner>
@@ -35,8 +41,9 @@ The SelfCleaningRollingFileAppender is a RollingFileAppender which periodically 
       <appender-ref ref="LogToFile" />
     </root>
   </log4net>
+</configuration>
 ```
-  
+
 In this example, the only new definitions beyond what RollingFileAppender uses are: the type of the appender, and the cleaner tag with the properties defined under it.  This example will clean out any log files older than 90 days and will remove the oldest log files when the total size of all log files exceeds 100 megabytes.
 
 The properties defined under the cleaner tag include:
@@ -83,10 +90,30 @@ The properties defined under the cleaner tag include:
         If the value is Always (default), then log directory cleaning will run on the same thread as logging, and will block until cleaning is complete.  This is recommended for batch and other background jobs.
         If the value is Never, then cleaning is performed asynchronously in the background on a different thread.  This is recommended for web and other processes which run continuously.
 
-Notes: 
+## Notes: 
 
 - If your configuration is setup to log to files without a file extension, then for safety, the cleaner will NOT attempt to infer a file extension (in order to prevent the accidental deletion of files other than log files).
 
 - You should not need to define the waitType property to Never unless the application does logging on a thread where occasional delays will be noticeable when the period check for old files is performed.  The default waitType is set to Always to handle the case of background processes where logging delays are not critical.  If the waitType is set to Never, and the process exits while in the middle of cleaning up the log directory, then cleaning will be retried (also with a wait type of Never) the next time the process is started.
 
 - It is not recommended to have multiple processes setup to clean the same logging directory with the same cleaning parameters.  If this is configured, all processes will attempt to clean the directory at about the same time.  The first one to start will get the work done, and the rest may silently continue when they attempt to delete files that no longer exist.
+
+
+## Log4Net Notes:
+
+- If you are using Log4Net with .NET Core, the way in which you initialize the Log4Net Repository has changed.  You can no longer simply do this:
+
+```
+    XmlConfigurator.Configure();
+```
+
+Instead you must do something like this:
+
+```
+    var fullPathToYourConfigFile = "some absolute or relative path goes here";
+    var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+    var configFile = new FileInfo(fullPathToYourConfigFile);
+    XmlConfigurator.Configure(logRepository, configFile);
+```
+
+This is because .NET Core does not support app.config files and will therefore not try to load any such config file automatically for you.  Instead you must tell Log4Net where your logging configuration file is.  This file can continue to have the same format as you see in the example above, but all the other sections that would have been present in a typical app.config file are not necessary.

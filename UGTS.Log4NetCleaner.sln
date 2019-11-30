@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UGTS.Log4NetCleaner", "sour
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UGTS.Log4NetCleaner.FunctionalTest", "source\UGTS.Log4NetCleaner.FunctionalTest\UGTS.Log4NetCleaner.FunctionalTest.csproj", "{8506EC14-170E-445F-9FD8-DD21F2F13BA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UGTS.Log4NetCleaner.UnitTest", "source\UGTS.Log4NetCleaner.UnitTest\UGTS.Log4NetCleaner.UnitTest.csproj", "{016A1298-6BBE-4B1E-AAC2-0378FF93E497}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UGTS.Log4NetCleaner.UnitTest", "source\UGTS.Log4NetCleaner.UnitTest\UGTS.Log4NetCleaner.UnitTest.csproj", "{016A1298-6BBE-4B1E-AAC2-0378FF93E497}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{86DEFA9C-50AB-4BB6-894B-0FC5401F523A}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
